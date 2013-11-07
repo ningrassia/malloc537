@@ -180,3 +180,13 @@ node * create(size_t base, size_t bounds)
 	temp->free = 0;
 	return temp;
 }
+
+void rotate_l(node * parent)
+{
+	/*
+	 *Implemented based on diagram from the MIT OCW lecture notes.
+	 */
+
+	parent->parent->children[LEFT_CHILD] = parent->children[RIGHT_CHILD];
+
+}

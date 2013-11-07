@@ -68,9 +68,14 @@ node * create(size_t base, size_t bounds);
 /*
  * Function to left-rotate a node and its child.
  */
-int rotate_l(node * parent);
+void rotate_l(node * parent);
 
 /*
  * Function to right-rotate a node and its child.
  */
-int rotate_r(node * parent);
+void rotate_r(node * parent);
+
+/*
+ * Function to do a color-swap on a node and its children.
+ */
+void color_swap( node * parent);
