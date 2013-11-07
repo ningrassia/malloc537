@@ -99,10 +99,11 @@ int insert_r(size_t base, size_t bounds, node * parent)
 		{
 			parent->bounds = bounds;
 			free = 0;
-			return 1;
+			return_value = 1;
 		}
 		else
 		{
+			printf("Error on malloc537\nNode with address %d already exists! How did this happen?", base);
 			return -1;
 		}
 	}
@@ -118,14 +119,33 @@ int insert_r(size_t base, size_t bounds, node * parent)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
-			insert_r(base, bounds, parent->children[RIGHT_CHILD]);
+			return insert_r(base, bounds, parent->children[RIGHT_CHILD]);
 		}
 		else
 		{
 			parent->children[RIGHT_CHILD] = create(base, bounds);
+			return 1;
+		}
 	}
+	
+	/*
+	 * The only thing left is to check the left node!
+	 * Insert a new node if it's empty, or call insert_r
+	 * with the left node as parent.
+	 */
 
-
+	else if(parent->base > base)
+	{
+		if(parent->children[LEFT] != NULL)
+		{
+			return insert_r(base, bounds, parent->children[LEFT_CHILD]);
+		}
+		else
+		{
+			parent->children[LEFT_CHILD] = create(base, bounds);
+			return 1;
+		}
+	}
 	return return_value;
 }
 
