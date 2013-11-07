@@ -27,7 +27,9 @@ void *malloc537(size_t size)
 	return_ptr = malloc(size);
 
 	//HERE WE DO AN INSERT!
-
+	insert(return_ptr, size);
+	
+	return return_ptr;
 }
 
 /*
@@ -36,8 +38,10 @@ void *malloc537(size_t size)
 */
 void free537(void *ptr)
 {
+	node * temp;
 	//HERE WE DO A REMOVE - errors handled there!
-	
+	temp = lookup(ptr);
+	temp->free = 1;
 	free(ptr);
 }
 
@@ -52,6 +56,9 @@ void *realloc537(void *ptr, size_t size)
 	if(ptr != NULL)
 	{
 		//HERE WE DO A REMOVE/mark as unused/whatever
+		node * temp;
+		temp = lookup(ptr);
+		temp->free = 1;
 	}
 	
 	return_pointer = realloc(ptr, size);
@@ -59,6 +66,7 @@ void *realloc537(void *ptr, size_t size)
 	if(return_pointer != NULL)
 	{
 		//HERE WE DO AN INSERT 
+		insert(ptr, size);
 	}
 	return return_pointer;
 }
@@ -75,4 +83,6 @@ void memcheck537(void *ptr, size_t size)
 	//node's range and print appropriate error
 	//Otherwise, check the size.
 	//If they don't match, print an error.
+	node * temp = lookup(ptr, size);
+	//BLA BLA BLA DO STUFF HERE!
 }
