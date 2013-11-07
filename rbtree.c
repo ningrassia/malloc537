@@ -9,7 +9,7 @@
 /*
  * This is the root of our tree!
  */
-tree rb_tree;
+node root;
 
 
 node * lookup(size_t base, size_t bounds)
@@ -18,7 +18,7 @@ node * lookup(size_t base, size_t bounds)
 	 * Just calls the recursive function
 	 * on the root of the tree.
 	 */
-	return lookup_r(base, bounds, rb_tree.root);
+	return lookup_r(base, bounds, root);
 }
 
 node * lookup_r(size_t base, size_t bounds, node * parent)
@@ -54,5 +54,88 @@ node * lookup_r(size_t base, size_t bounds, node * parent)
 
 	/*
 	 * If we get here, the node doesn't exist!
+	 */
 	return NULL;
+}
+
+int insert(size_t base, size_t bounds)
+{
+
+	/*
+	 * Special base case:
+	 * empty tree!
+	 * For an empty tree, we create a black node,
+	 * and insert it as the tree's root!
+	 */
+	if(root == NULL)
+	{
+		root = create(base, bounds);
+		root->red = 0;
+		return 1;
+	}
+
+
+	return insert_r(base, bounds, root);
+}
+
+int insert_r(size_t base, size_t bounds, node * parent)
+{
+	int return_value = 0;
+
+	/*
+	 * We always want to insert at the bottom of the tree,
+	 * so we insert the node at the bottom first,
+	 * then fix problems!
+	 */
+
+	/*
+	 * Replace the already existing node
+	 * as long as it's been freed, otherwise
+	 * return -1 (error).
+	 */
+	if(parent->base == base)
+	{
+		if(parent->free)
+		{
+			parent->bounds = bounds;
+			free = 0;
+			return 1;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	/*
+	 * If our base is bigger than the parent's base,
+	 * look at the right node. If it's empty,
+	 * make a new node and put it there.
+	 * Otherwise, call insert_r on that right node!
+	 * Recursion!
+	 */
+	else if(parent->base < base)
+	{
+		if(parent->children[RIGHT_CHILD] != NULL)
+		{
+			insert_r(base, bounds, parent->children[RIGHT_CHILD]);
+		}
+		else
+		{
+			parent->children[RIGHT_CHILD] = create(base, bounds);
+	}
+
+
+	return return_value;
+}
+
+node * create(size_t base, size_t bounds)
+{
+	node * temp;
+	temp = malloc(sizeof(node));
+	temp->base = base;
+	temp->bounds = bounds;
+	temp->red = 1;
+	temp->free = 0;
+	return temp;
 }

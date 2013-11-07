@@ -9,8 +9,8 @@
 /*
  * Use these constants to get which child you want!
  */
-const int LEFT_CHILD = 0;
-const int RIGHT_CHILD = 1;
+extern const int LEFT_CHILD = 0;
+extern const int RIGHT_CHILD = 1;
 
 typedef struct node
 {
@@ -19,15 +19,12 @@ typedef struct node
 	size_t base;
 	size_t bounds;
 	int free;
-}
-
-typedef struct tree
-{
-	node * root;
+	int red;
 }
 
 /*
  * Finds a node within the base and its bounds.
+ * This might be changed???
  */
 node * lookup(size_t base, size_t bounds);
 
@@ -37,7 +34,8 @@ node * lookup(size_t base, size_t bounds);
  */
 node * lookup_r(size_t base, size_t bounds, node * parent);
 
-/* Inserts a node into the tree. Self-balancing!
+/* 
+ * Inserts a node into the tree. Self-balancing!
  * Pass in the node's base and bounds.
  * Creates a new node if there's not a node at that base.
  * If there is a node there, and it's been freed,
@@ -46,3 +44,17 @@ node * lookup_r(size_t base, size_t bounds, node * parent);
  * return an error.
  */
 int insert(size_t base, size_t bounds);
+
+/* 
+ * This is the actual recursive function that does the insert!
+ * Shouldn't be called by user code - so we don't need to specify the
+ * parent node in the program! Just some magic!
+ */
+int insert_r(size_t base, size_t bounds, node * parent);
+
+/* 
+ * Another internal function!
+ * Returns a red, unfreed node with the specified
+ * base and bounds.
+ */
+node * create(size_t base, size_t bounds);
