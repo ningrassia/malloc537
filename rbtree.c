@@ -8,6 +8,7 @@
 
 /*
  * This is the root of our tree!
+ * Or maybe this should be in the malloc file???
  */
 node root;
 
@@ -62,6 +63,12 @@ int insert(size_t base, size_t bounds)
 {
 
 	/*
+	 * First we make our node.
+	 */
+	node * temp;
+	temp = create(base, bounds);
+
+	/*
 	 * Special base case:
 	 * empty tree!
 	 * For an empty tree, we create a black node,
@@ -69,16 +76,19 @@ int insert(size_t base, size_t bounds)
 	 */
 	if(root == NULL)
 	{
-		root = create(base, bounds);
+		root = temp;
 		root->red = 0;
 		return 1;
 	}
 
-
-	return insert_r(base, bounds, root);
+	/*
+	 * Otherwise, pass along our created node
+	 * to our recursive insert function.
+	 */
+	return insert_r(base, bounds, root, temp);
 }
 
-int insert_r(size_t base, size_t bounds, node * parent)
+int insert_r(size_t base, size_t bounds, node * parent, node * temp)
 {
 	int return_value = 0;
 
@@ -119,12 +129,12 @@ int insert_r(size_t base, size_t bounds, node * parent)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
-			return insert_r(base, bounds, parent->children[RIGHT_CHILD]);
+			return_value =  insert_r(base, bounds, parent->children[RIGHT_CHILD]);
 		}
 		else
 		{
 			parent->children[RIGHT_CHILD] = create(base, bounds);
-			return 1;
+			return_value =  1;
 		}
 	}
 	
@@ -138,14 +148,25 @@ int insert_r(size_t base, size_t bounds, node * parent)
 	{
 		if(parent->children[LEFT] != NULL)
 		{
-			return insert_r(base, bounds, parent->children[LEFT_CHILD]);
+			return_value =  insert_r(base, bounds, parent->children[LEFT_CHILD]);
 		}
 		else
 		{
 			parent->children[LEFT_CHILD] = create(base, bounds);
-			return 1;
+			return_value =  1;
 		}
 	}
+
+	/*
+	 * And here's the fun part!
+	 * Now we check for a violation of red-black tree properties!
+	 * Because we always insert red nodes, we only need to check
+	 * for violations of one of the properties!
+	 *
+	 * Modeled on pseudocode from lecture slides from MIT lecture.
+	 */
+	if(
+
 	return return_value;
 }
 

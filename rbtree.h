@@ -3,6 +3,12 @@
  * Header for red-black tree.
  * Contains structs for the tree and the nodes,
  * and methods to find/create nodes.
+ *
+ * Implementation based on, but not copied from
+ * http://www.cs.auckland.ac.nz/software/AlgAnim/red_black.html
+ * and
+ * http://videolectures.net/mit6046jf05_demaine_lec10/
+ *
  */
 #include <sys/types.h>
 
@@ -58,3 +64,13 @@ int insert_r(size_t base, size_t bounds, node * parent);
  * base and bounds.
  */
 node * create(size_t base, size_t bounds);
+
+/*
+ * Function to left-rotate a node and its child.
+ */
+int rotate_l(node * parent);
+
+/*
+ * Function to right-rotate a node and its child.
+ */
+int rotate_r(node * parent);
