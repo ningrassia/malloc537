@@ -15,19 +15,19 @@
 /*
  * Use these constants to get which child you want!
  */
-extern const int LEFT_CHILD = 0;
-extern const int RIGHT_CHILD = 1;
+#define LEFT_CHILD 0
+#define RIGHT_CHILD 1
 
 typedef struct node
 {
-	node * parent;
-	node * children[2];
+	struct node * parent;
+	struct node * children[2];
 	void * base;
 	size_t bounds;
 	int root;
 	int free;
 	int red;
-}
+}node;
 
 /*
  * Finds a node with a given base.
@@ -87,16 +87,6 @@ int clean_tree(node * child);
 node * create(void * base, size_t bounds);
 
 /*
- * Function to left-rotate a node and its child.
+ * Print the current tree.
  */
-void rotate_l(node * parent);
-
-/*
- * Function to right-rotate a node and its child.
- */
-void rotate_r(node * parent);
-
-/*
- * Function to do a color-swap on a node and its children.
- */
-void color_swap(node * parent);
+void print(node * root, int depth);

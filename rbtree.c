@@ -3,8 +3,12 @@
  * Implements lookup and insert methods for a red-black tree!
  */
 #include <sys/types.h>
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "rbtree.h"
+
+#define LEFT_CHILD 0
+#define RIGHT_CHILD 1
 
 /*
  * This is the root of our tree!
@@ -19,7 +23,7 @@ node * lookup(void * base)
 	 * Just calls the recursive function
 	 * on the root of the tree.
 	 */
-	return lookup_r(base, bounds, root);
+	return lookup_r(base, root);
 }
 
 node * lookup_r(void * base, node * parent)
@@ -28,7 +32,7 @@ node * lookup_r(void * base, node * parent)
 	 * return the parent node if it's within the given base
 	 * and bounds!
 	 */
-	if((parent->base = base))
+	if((parent->base == base))
 	{
 		return parent;
 	}
@@ -39,7 +43,7 @@ node * lookup_r(void * base, node * parent)
 	{
 		if(parent->children[LEFT_CHILD] != NULL)
 		{
-			return lookup_r(base, bounds parent->children[LEFT_CHILD]);
+			return lookup_r(base, parent->children[LEFT_CHILD]);
 		}
 	}
 	/* 
@@ -49,7 +53,7 @@ node * lookup_r(void * base, node * parent)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
-			return lookup_r(base, bounds,  parent->children[RIGHT_CHILD]);
+			return lookup_r(base,  parent->children[RIGHT_CHILD]);
 		}
 	}
 
@@ -79,9 +83,9 @@ node * bounds_lookup_r(void * base, node * parent)
 	 * Return the parent if we are.
 	 * Otherwise, continue our search.
 	 */
-	else if(base > parent->base)
+	else if(base >= parent->base)
 	{
-		if(base < (parent->base + parent->bounds) && !(parent->free))
+		if((size_t)base <= ((size_t)parent->base + parent->bounds) && !(parent->free))
 		{
 			return parent;
 		}
@@ -93,8 +97,12 @@ node * bounds_lookup_r(void * base, node * parent)
 
 			node * left_search;
 			node * right_search;
-			left_search = bounds_lookup_r(base, parent->children[LEFT_CHILD];
-			right_search = bounds_lookup_r(base, parent->children[RIGHT_CHILD];
+			if(parent->children[LEFT_CHILD] != NULL)
+			left_search = bounds_lookup_r(base, parent->children[LEFT_CHILD]);
+			
+			if(parent->children[RIGHT_CHILD] != NULL)
+			right_search = bounds_lookup_r(base, parent->children[RIGHT_CHILD]);
+
 			if(right_search != NULL)
 			{
 				return right_search;
@@ -111,7 +119,7 @@ node * bounds_lookup_r(void * base, node * parent)
 	 */
 	else
 	{
-		return bounds_lookup_r(base, parent->children[LEFT_CHILD];
+		return bounds_lookup_r(base, parent->children[LEFT_CHILD]);
 	}
 }
 
@@ -189,7 +197,7 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 		if(parent->free)
 		{
 			parent->bounds = bounds;
-			free = 0;
+			parent->free = 0;
 			return_value = 1;
 		}
 		else
@@ -228,7 +236,7 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 
 	else if(parent->base > base)
 	{
-		if(parent->children[LEFT] != NULL)
+		if(parent->children[LEFT_CHILD] != NULL)
 		{
 			return_value =  insert_r(base, bounds, parent->children[LEFT_CHILD], temp);
 		}
@@ -248,6 +256,9 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 
 int clean_tree(node * child)
 {
+
+	node * tempNode;
+	node * tempGparent;
 	/*
 	 * And here's the fun part!
 	 * Now we check for a violation of red-black tree properties!
@@ -273,11 +284,23 @@ int clean_tree(node * child)
 		 * as black to keep the red/black properties
 	 	*/	
 		
+		/*
+		 * We need to handle insertion when the depth is low - i.e. we don't have enough nodes
+		 * to actually have grandparents/great grandparents.
+		 */
 
-		if((child->parent->parent->child[0]->red == 1) && (child->parent->parent->child[1]->red == 1)){
+		/*NEED TO CHECK IF A CHILD/PARENT EXISTS BEFORE USING IT!*/
+		/* or implement sentinel nodes??? */
+
+		if(child->parent->parent == NULL)
+		{
+			return 1;
+		}
+
+		if((child->parent->parent->children[0]->red == 1) && (child->parent->parent->children[1]->red == 1)){
 			
-			child->parent->parent->child[0]->red = 0;
-			child->parent->parent->child[1]->red == 0;
+			child->parent->parent->children[0]->red = 0;
+			child->parent->parent->children[1]->red = 0;
 
 			/* if the grandparents parent is NULL then it is the root node and we keep it black*/
 			if(child->parent->parent->root == 1){
@@ -297,21 +320,21 @@ int clean_tree(node * child)
 		}
 
 		/*If this node is the left child of a left child, then we need to restructure*/
-		if( (child->parent->parent->child[0] == child->parent) && (child == child->parent->child[0]) )		
+		if( (child->parent->parent->children[0] == child->parent) && (child == child->parent->children[0]) )		
 		{
 	
 			
-			child->parent->color = 0;
-			child->parent->parent->color = 1;
+			child->parent->red = 0;
+			child->parent->parent->red = 1;
 			
-			//TODO: Is this malloc valid? Does it do what I want it to? I want to 
-			//	create a temporary node with all the grandparents attributes,
-			//	otherwise we will lose its pointers
-			node * tempGparent = malloc(sizeof(node *));
+			/*TODO: Is this malloc valid? Does it do what I want it to? I want to 
+			 *	create a temporary node with all the grandparents attributes,
+			 *	otherwise we will lose its pointers
+			 */
 			tempGparent = child->parent->parent;
 			
 			/*If the grandparent's parent is null, it is the root*/
-			if (child->parent->parent->parent = NULL)
+			if (child->parent->parent->parent == NULL)
 			{
 
 				root = child->parent;
@@ -321,21 +344,21 @@ int clean_tree(node * child)
 			else
 			{			
 	
-				child->parent->parent->parent->child[0] = child->parent;
+				child->parent->parent->parent->children[0] = child->parent;
 
 			}
 			
-			//TODO Do not know if this next line is valid.
+			/*TODO Do not know if this next line is valid. maybe???*/
 			child->parent->parent = child->parent->parent->parent;
-			tempGparent->child[0] = child->parent->child[1];
-			if (child->parent->child[1] != NULL)
+			tempGparent->children[0] = child->parent->children[1];
+			if (child->parent->children[1] != NULL)
 			{
 
-				child->parent->child[1]->parent = tempGparent;
+				child->parent->children[1]->parent = tempGparent;
 
 			}
 			
-			child->parent->child[1] = tempGparent;
+			child->parent->children[1] = tempGparent;
 			tempGparent->parent = child->parent;
 			
 			return 1;
@@ -343,21 +366,17 @@ int clean_tree(node * child)
 		}
 
 		/*If this node is the right child of a right child, then we need to restructure*/
-		if( (child->parent->parent->child[1] == child->parent) && (child == child->parent->child[1]) )		
+		if( (child->parent->parent->children[1] == child->parent) && (child == child->parent->children[1]) )		
 		{
 	
 			/*Set parent to black and grandparent to red*/
-			child->parent->color = 0;
-			child->parent->parent->color = 1;
+			child->parent->red = 0;
+			child->parent->parent->red = 1;
 			
-			//TODO: Is this malloc valid? Does it do what I want it to? I want to 
-			//	create a temporary node with all the grandparents attributes,
-			//	otherwise we will lose its pointers
-			node * tempGparent = malloc(sizeof(node *));
 			tempGparent = child->parent->parent;
 			
 			/*If the grandparent's parent is null, our parent becomes the root*/
-			if (child->parent->parent->parent = NULL)
+			if (child->parent->parent->parent == NULL)
 			{
 
 				root = child->parent;
@@ -367,27 +386,27 @@ int clean_tree(node * child)
 			else
 			{			
 	
-				child->parent->parent->parent->child[1] = child->parent;
+				child->parent->parent->parent->children[1] = child->parent;
 
 			}
 			
-			//TODO Do not know if this next line is valid. What I want to do is to
-			//	set the parent's parent field equal to the granparent's parent. this will
-			//	break the connection but will we get the information before it is lost?
+			/*TODO Do not know if this next line is valid. What I want to do is to
+			 	set the parent's parent field equal to the granparent's parent. this will
+				break the connection but will we get the information before it is lost?*/
 			child->parent->parent = child->parent->parent->parent;
 			
 			/*Set the granparents right child to the parents left. RBT rules make this valid*/
-			tempGparent->child[1] = child->parent->child[0];
+			tempGparent->children[1] = child->parent->children[0];
 			
 			/*If the parent's left child is not null, we set it's parent to the gparent*/
-			if (child->parent->child[0] != NULL)
+			if (child->parent->children[0] != NULL)
 			{
 
-				child->parent->child[0]->parent = tempGparent;
+				child->parent->children[0]->parent = tempGparent;
 
 			}
 			/*set parents left child to the grandparent*/
-			child->parent->child[0] = tempGparent;
+			child->parent->children[0] = tempGparent;
 			
 			/*Set the temporary grandparent's parent to the parent of our child*/
 			tempGparent->parent = child->parent;
@@ -396,25 +415,24 @@ int clean_tree(node * child)
 
 		}
 		/*If the parent is the right child and it's parent is red and a left child*/
-		if((child == child->parent->child[1]) && (child->parent->parent->child[0] == child->parent))
+		if((child == child->parent->children[1]) && (child->parent->parent->children[0] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
-			child->color = 0;
-			child->parent->parent->color = 1;
+			child->red = 0;
+			child->parent->parent->red = 1;
 			
-			//TODO: CAN I DO THIS?
+			
 			/*Create temporary node to store grandparent's parent*/
-			node * tempNode = malloc(sizeof(node *));
-			node * tempNode = child->parent->parent->parent;
+			tempNode = child->parent->parent->parent;
 			/*set the grandparent to the child's right child. Then we set the gparent's (now the child's child) left child to NULL and parent to child */			
-			child->child[1] = child->parent->parent;
-			child->child[1]->child[0] = NULL;
-			child->child[1]->parent = child;
+			child->children[1] = child->parent->parent;
+			child->children[1]->children[0] = NULL;
+			child->children[1]->parent = child;
 
 			/*set the parent to the child's left child. Then we set the parents right child to NULL and it's parent to the child*/
-			child->child[0] = child->parent;
-			child->child[0]->child[1] = NULL;
-			child->child[0]->parent = child;
+			child->children[0] = child->parent;
+			child->children[0]->children[1] = NULL;
+			child->children[0]->parent = child;
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
 			if (tempNode == NULL)
@@ -434,26 +452,26 @@ int clean_tree(node * child)
 			return 1;
 		}
 		/*If the parent is the left child and it's parent is red and a right child*/
-		if((child == child->parent->child[0]) && (child->parent->parent->child[1] == child->parent))
+		if((child == child->parent->children[0]) && (child->parent->parent->children[1] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
-			child->color = 0;
-			child->parent->parent->color = 1;
+			child->red = 0;
+			child->parent->parent->red = 1;
 			
-			//TODO: CAN I DO THIS?
+			/*TODO: CAN I DO THIS?*/
 			/*Create temporary node to store grandparent's parent*/
-			node * tempNode = malloc(sizeof(node *));
-			node * tempNode = child->parent->parent->parent;
+			/*don't need to malloc!*/
+			tempNode = child->parent->parent->parent;
 			
 			/*set the grandparent to the child's left child. Then we set the gparent's (now the child's child) right child to NULL and parent to child */
-			child->child[0] = child->parent->parent;
-			child->child[0]->child[1] = NULL;
-			child->child[0]->parent = child;
+			child->children[0] = child->parent->parent;
+			child->children[0]->children[1] = NULL;
+			child->children[0]->parent = child;
 
 			/*set the parent to the child's right child. Then we set the parents left child to NULL and it's parent to the child*/
-			child->child[1] = child->parent;
-			child->child[1]->child[1] = NULL;
-			child->child[1]->parent = child;
+			child->children[1] = child->parent;
+			child->children[1]->children[1] = NULL;
+			child->children[1]->parent = child;
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
 			if (tempNode == NULL)
@@ -472,10 +490,9 @@ int clean_tree(node * child)
 			}
 			return 1;
 		}
-
-	
-
 	}
+
+	return 0;
 }
 
 node * create(void * base, size_t bounds)
@@ -488,4 +505,16 @@ node * create(void * base, size_t bounds)
 	temp->red = 1;
 	temp->free = 0;
 	return temp;
+}
+
+void print(node * root, int depth)
+{
+	int i;
+	print(root->children[LEFT_CHILD], depth + 1);
+	for(i = 0; i < depth; i++)
+	{
+		printf(".");
+	}
+	printf("Node at %p with size %i\n", root->base, (int)root->bounds);
+	print(root->children[RIGHT_CHILD], depth + 1);
 }
