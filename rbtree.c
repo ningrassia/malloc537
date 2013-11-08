@@ -10,7 +10,7 @@
  * This is the root of our tree!
  * Or maybe this should be in the malloc file???
  */
-node root;
+node * root;
 
 
 node * lookup(void * base)
@@ -135,6 +135,7 @@ int insert(void * base, size_t bounds)
 	 */
 	if(root == NULL)
 	{
+		temp->root = 1;
 		root = temp;
 		root->red = 0;
 		return 1;
@@ -259,14 +260,218 @@ int clean_tree(node * child)
 	/*
 	 * If the child's parent is black, we're fine!
 	 */
+
 	if(!(child->parent->red))
 	{
 		return 1;
 	}
 	else
 	{
+		/*
+		 * If the child's parent and the parent's sibling is red, just change their color to black and
+		 * change the grandparent to red. If the grandparent is the root node, then just keep it
+		 * as black to keep the red/black properties
+	 	*/	
+		
 
-		if(child->
+		if((child->parent->parent->child[0]->red == 1) && (child->parent->parent->child[1]->red == 1)){
+			
+			child->parent->parent->child[0]->red = 0;
+			child->parent->parent->child[1]->red == 0;
+
+			/* if the grandparents parent is NULL then it is the root node and we keep it black*/
+			if(child->parent->parent->root == 1){
+
+				return 1;
+
+			}
+			
+			/*otherwise we change the grandparent's color to red and do a recursive call on that node*/
+			else{
+
+				child->parent->parent->red = 1;
+				clean_tree(child->parent->parent);
+		
+			}
+
+		}
+
+		/*If this node is the left child of a left child, then we need to restructure*/
+		if( (child->parent->parent->child[0] == child->parent) && (child == child->parent->child[0]) )		
+		{
+	
+			
+			child->parent->color = 0;
+			child->parent->parent->color = 1;
+			
+			//TODO: Is this malloc valid? Does it do what I want it to? I want to 
+			//	create a temporary node with all the grandparents attributes,
+			//	otherwise we will lose its pointers
+			node * tempGparent = malloc(sizeof(node *));
+			tempGparent = child->parent->parent;
+			
+			/*If the grandparent's parent is null, it is the root*/
+			if (child->parent->parent->parent = NULL)
+			{
+
+				root = child->parent;
+
+			}
+			/*Otherwise we set the great grandparents left child to the parent*/
+			else
+			{			
+	
+				child->parent->parent->parent->child[0] = child->parent;
+
+			}
+			
+			//TODO Do not know if this next line is valid.
+			child->parent->parent = child->parent->parent->parent;
+			tempGparent->child[0] = child->parent->child[1];
+			if (child->parent->child[1] != NULL)
+			{
+
+				child->parent->child[1]->parent = tempGparent;
+
+			}
+			
+			child->parent->child[1] = tempGparent;
+			tempGparent->parent = child->parent;
+			
+			return 1;
+
+		}
+
+		/*If this node is the right child of a right child, then we need to restructure*/
+		if( (child->parent->parent->child[1] == child->parent) && (child == child->parent->child[1]) )		
+		{
+	
+			/*Set parent to black and grandparent to red*/
+			child->parent->color = 0;
+			child->parent->parent->color = 1;
+			
+			//TODO: Is this malloc valid? Does it do what I want it to? I want to 
+			//	create a temporary node with all the grandparents attributes,
+			//	otherwise we will lose its pointers
+			node * tempGparent = malloc(sizeof(node *));
+			tempGparent = child->parent->parent;
+			
+			/*If the grandparent's parent is null, our parent becomes the root*/
+			if (child->parent->parent->parent = NULL)
+			{
+
+				root = child->parent;
+
+			}
+			/*Otherwise we set the great grandparents right child to the parent*/
+			else
+			{			
+	
+				child->parent->parent->parent->child[1] = child->parent;
+
+			}
+			
+			//TODO Do not know if this next line is valid. What I want to do is to
+			//	set the parent's parent field equal to the granparent's parent. this will
+			//	break the connection but will we get the information before it is lost?
+			child->parent->parent = child->parent->parent->parent;
+			
+			/*Set the granparents right child to the parents left. RBT rules make this valid*/
+			tempGparent->child[1] = child->parent->child[0];
+			
+			/*If the parent's left child is not null, we set it's parent to the gparent*/
+			if (child->parent->child[0] != NULL)
+			{
+
+				child->parent->child[0]->parent = tempGparent;
+
+			}
+			/*set parents left child to the grandparent*/
+			child->parent->child[0] = tempGparent;
+			
+			/*Set the temporary grandparent's parent to the parent of our child*/
+			tempGparent->parent = child->parent;
+			
+			return 1;
+
+		}
+		/*If the parent is the right child and it's parent is red and a left child*/
+		if((child == child->parent->child[1]) && (child->parent->parent->child[0] == child->parent))
+		{
+			/*Change this node's color to black and set the granparent to red*/
+			child->color = 0;
+			child->parent->parent->color = 1;
+			
+			//TODO: CAN I DO THIS?
+			/*Create temporary node to store grandparent's parent*/
+			node * tempNode = malloc(sizeof(node *));
+			node * tempNode = child->parent->parent->parent;
+			/*set the grandparent to the child's right child. Then we set the gparent's (now the child's child) left child to NULL and parent to child */			
+			child->child[1] = child->parent->parent;
+			child->child[1]->child[0] = NULL;
+			child->child[1]->parent = child;
+
+			/*set the parent to the child's left child. Then we set the parents right child to NULL and it's parent to the child*/
+			child->child[0] = child->parent;
+			child->child[0]->child[1] = NULL;
+			child->child[0]->parent = child;
+			
+			/*If the grandparent's parent was null, then we set the child to the root*/
+			if (tempNode == NULL)
+			{
+
+				child->parent = NULL;
+				root = child;	
+	
+			}
+			/*Otherwise we set the child's parent to the grandparents parent*/
+			if (tempNode != NULL)
+			{
+
+				child->parent = tempNode;
+
+			}
+			return 1;
+		}
+		/*If the parent is the left child and it's parent is red and a right child*/
+		if((child == child->parent->child[0]) && (child->parent->parent->child[1] == child->parent))
+		{
+			/*Change this node's color to black and set the granparent to red*/
+			child->color = 0;
+			child->parent->parent->color = 1;
+			
+			//TODO: CAN I DO THIS?
+			/*Create temporary node to store grandparent's parent*/
+			node * tempNode = malloc(sizeof(node *));
+			node * tempNode = child->parent->parent->parent;
+			
+			/*set the grandparent to the child's left child. Then we set the gparent's (now the child's child) right child to NULL and parent to child */
+			child->child[0] = child->parent->parent;
+			child->child[0]->child[1] = NULL;
+			child->child[0]->parent = child;
+
+			/*set the parent to the child's right child. Then we set the parents left child to NULL and it's parent to the child*/
+			child->child[1] = child->parent;
+			child->child[1]->child[1] = NULL;
+			child->child[1]->parent = child;
+			
+			/*If the grandparent's parent was null, then we set the child to the root*/
+			if (tempNode == NULL)
+			{
+
+				child->parent = NULL;
+				root = child;	
+	
+			}
+			/*Otherwise we set the child's parent to the grandparents parent*/
+			if (tempNode != NULL)
+			{
+
+				child->parent = tempNode;
+
+			}
+			return 1;
+		}
 
 	
 
@@ -279,6 +484,7 @@ node * create(void * base, size_t bounds)
 	temp = malloc(sizeof(node));
 	temp->base = base;
 	temp->bounds = bounds;
+	temp->root = 0;	
 	temp->red = 1;
 	temp->free = 0;
 	return temp;

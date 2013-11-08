@@ -24,6 +24,7 @@ typedef struct node
 	node * children[2];
 	void * base;
 	size_t bounds;
+	int root;
 	int free;
 	int red;
 }
@@ -82,6 +83,7 @@ int clean_tree(node * child);
  * Returns a red, unfreed node with the specified
  * base and bounds.
  */
+
 node * create(void * base, size_t bounds);
 
 /*
