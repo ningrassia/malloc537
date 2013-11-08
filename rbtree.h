@@ -22,23 +22,36 @@ typedef struct node
 {
 	node * parent;
 	node * children[2];
-	size_t base;
+	void * base;
 	size_t bounds;
 	int free;
 	int red;
 }
 
 /*
- * Finds a node within the base and its bounds.
- * This might be changed???
+ * Finds a node with a given base.
+ * Returns null for a non-existant node!
  */
-node * lookup(size_t base, size_t bounds);
+node * lookup(void * base);
 
 /*
  * Recursive function called by lookup - shouldn't be
  * user code!
  */
-node * lookup_r(size_t base, size_t bounds, node * parent);
+node * lookup_r(void * base, node * parent);
+
+/*
+ * Check if a given base address is contained in a node,
+ * returns the node if the node is active (not freed) and
+ * and the address is contained in its base/bounds.
+ */
+node * bounds_lookup(void * base);
+
+/*
+ * Recursive function for bounds_lookup.
+ */
+node * bounds_lookup_r(void * base, node * parent);
+
 
 /* 
  * Inserts a node into the tree. Self-balancing!
@@ -49,21 +62,21 @@ node * lookup_r(size_t base, size_t bounds, node * parent);
  * If the node is there and it hasn't been freed,
  * return an error.
  */
-int insert(size_t base, size_t bounds);
+int insert(void * base, size_t bounds);
 
 /* 
  * This is the actual recursive function that does the insert!
  * Shouldn't be called by user code - so we don't need to specify the
  * parent node in the program! Just some magic!
  */
-int insert_r(size_t base, size_t bounds, node * parent);
+int insert_r(void * base, size_t bounds, node * parent);
 
 /* 
  * Another internal function!
  * Returns a red, unfreed node with the specified
  * base and bounds.
  */
-node * create(size_t base, size_t bounds);
+node * create(void * base, size_t bounds);
 
 /*
  * Function to left-rotate a node and its child.
@@ -78,4 +91,4 @@ void rotate_r(node * parent);
 /*
  * Function to do a color-swap on a node and its children.
  */
-void color_swap( node * parent);
+void color_swap(node * parent);

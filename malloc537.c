@@ -13,7 +13,7 @@ include "rbtree.h"
 /*
  * Allocates memory using malloc, and stores a tuple of address and length
  * in a hash table.
- * Checks for zero size
+ * Checks for zero size!
 */
 void *malloc537(size_t size)
 {

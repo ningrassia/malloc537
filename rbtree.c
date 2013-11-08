@@ -13,7 +13,7 @@
 node root;
 
 
-node * lookup(size_t base, size_t bounds)
+node * lookup(size_t base)
 {
 	/*
 	 * Just calls the recursive function
@@ -22,13 +22,13 @@ node * lookup(size_t base, size_t bounds)
 	return lookup_r(base, bounds, root);
 }
 
-node * lookup_r(size_t base, size_t bounds, node * parent)
+node * lookup_r(size_t base, node * parent)
 {
 	/*
 	 * return the parent node if it's within the given base
 	 * and bounds!
 	 */
-	if((parent->base >= base) && (parent->base <= (base + bounds)))
+	if((parent->base = base))
 	{
 		return parent;
 	}
@@ -58,6 +58,13 @@ node * lookup_r(size_t base, size_t bounds, node * parent)
 	 */
 	return NULL;
 }
+
+node * bounds_lookup(size_t base)
+{
+	return bounds_lookup_r(base, root);
+}
+
+node * bounds_lookup_r(size_t base
 
 int insert(size_t base, size_t bounds)
 {
@@ -163,7 +170,7 @@ int insert_r(size_t base, size_t bounds, node * parent, node * temp)
 	 * Because we always insert red nodes, we only need to check
 	 * for violations of one of the properties!
 	 *
-	 * Modeled on pseudocode from lecture slides from MIT lecture.
+	 * Modeled on CS 367 lecture notes
 	 */
 	if(
 
@@ -183,10 +190,6 @@ node * create(size_t base, size_t bounds)
 
 void rotate_l(node * parent)
 {
-	/*
-	 *Implemented based on diagram from the MIT OCW lecture notes.
-	 */
 
-	parent->parent->children[LEFT_CHILD] = parent->children[RIGHT_CHILD];
 
 }
