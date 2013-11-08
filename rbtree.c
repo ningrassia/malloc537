@@ -13,7 +13,7 @@
 node root;
 
 
-node * lookup(size_t base)
+node * lookup(void * base)
 {
 	/*
 	 * Just calls the recursive function
@@ -22,7 +22,7 @@ node * lookup(size_t base)
 	return lookup_r(base, bounds, root);
 }
 
-node * lookup_r(size_t base, node * parent)
+node * lookup_r(void * base, node * parent)
 {
 	/*
 	 * return the parent node if it's within the given base
@@ -59,14 +59,63 @@ node * lookup_r(size_t base, node * parent)
 	return NULL;
 }
 
-node * bounds_lookup(size_t base)
+node * bounds_lookup(void * base)
 {
 	return bounds_lookup_r(base, root);
 }
 
-node * bounds_lookup_r(size_t base
+node * bounds_lookup_r(void * base, node * parent)
+{
+	/*
+	 * If our base equals the parent's base, return the parent.
+	 */
+	if(base == parent->base && !(parent->free))
+	{
+		return parent;
+	}
 
-int insert(size_t base, size_t bounds)
+	/*
+	 * If the parent's base is smaller, check if we're inside the parent's space!
+	 * Return the parent if we are.
+	 * Otherwise, continue our search.
+	 */
+	else if(base > parent->base)
+	{
+		if(base < (parent->base + parent->bounds) && !(parent->free))
+		{
+			return parent;
+		}
+		else
+		{
+			/*
+			 * If the base is smaller and it's not contained,
+			 */
+
+			node * left_search;
+			node * right_search;
+			left_search = bounds_lookup_r(base, parent->children[LEFT_CHILD];
+			right_search = bounds_lookup_r(base, parent->children[RIGHT_CHILD];
+			if(right_search != NULL)
+			{
+				return right_search;
+			}
+			else
+			{
+				return left_search;
+			}
+		}
+	}
+
+	/*
+	 * If the parent's base is bigger, just keep on looking.
+	 */
+	else
+	{
+		return bounds_lookup_r(base, parent->children[LEFT_CHILD];
+	}
+}
+
+int insert(void * base, size_t bounds)
 {
 
 	/*
@@ -95,7 +144,7 @@ int insert(size_t base, size_t bounds)
 	return insert_r(base, bounds, root, temp);
 }
 
-int insert_r(size_t base, size_t bounds, node * parent, node * temp)
+int insert_r(void * base, size_t bounds, node * parent, node * temp)
 {
 	int return_value = 0;
 
@@ -177,7 +226,7 @@ int insert_r(size_t base, size_t bounds, node * parent, node * temp)
 	return return_value;
 }
 
-node * create(size_t base, size_t bounds)
+node * create(void * base, size_t bounds)
 {
 	node * temp;
 	temp = malloc(sizeof(node));

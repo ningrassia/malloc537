@@ -44,6 +44,7 @@ node * lookup_r(void * base, node * parent);
  * Check if a given base address is contained in a node,
  * returns the node if the node is active (not freed) and
  * and the address is contained in its base/bounds.
+ * Ignores free nodes.
  */
 node * bounds_lookup(void * base);
 
