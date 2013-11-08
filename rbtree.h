@@ -65,12 +65,17 @@ node * bounds_lookup_r(void * base, node * parent);
  */
 int insert(void * base, size_t bounds);
 
-/* 
- * This is the actual recursive function that does the insert!
- * Shouldn't be called by user code - so we don't need to specify the
- * parent node in the program! Just some magic!
+/*
+ * Does a standard BST insert on our new node, and then
+ * fixes the tree for red-black tree properties.
+ * Internal to the rbtree stuff.
  */
-int insert_r(void * base, size_t bounds, node * parent);
+int insert_r(void * base, size_t bounds, node * parent, node * temp);
+
+/*
+ * Does all of the cleanup work after an insert.
+ */
+int clean_tree(node * child);
 
 /* 
  * Another internal function!

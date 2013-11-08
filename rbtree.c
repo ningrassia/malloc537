@@ -118,6 +118,9 @@ node * bounds_lookup_r(void * base, node * parent)
 int insert(void * base, size_t bounds)
 {
 
+	int insert_return;
+	int clean_tree_return;
+
 	/*
 	 * First we make our node.
 	 */
@@ -141,7 +144,28 @@ int insert(void * base, size_t bounds)
 	 * Otherwise, pass along our created node
 	 * to our recursive insert function.
 	 */
-	return insert_r(base, bounds, root, temp);
+	insert_return = insert_r(base, bounds, root, temp);
+	if(insert_return < 0)
+	{
+		printf("Error on insert_r return!\n");
+		return insert_return;
+	}
+
+	/*
+	 * And now, we clean up our messy tree!
+	 */
+	clean_tree_return = clean_tree(temp);
+	if(clean_tree_return < 0)
+	{
+		printf("Error on clean_tree return!\n");
+		return clean_tree_return;
+	}
+
+	/*
+	 * Return 1 on a success.
+	 */
+	return 1;
+
 }
 
 int insert_r(void * base, size_t bounds, node * parent, node * temp)
@@ -169,7 +193,7 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 		}
 		else
 		{
-			printf("Error on malloc537\nNode with address %d already exists! How did this happen?", base);
+			printf("Error on malloc537\nOccupied node with address %p already exists! How did this happen?\n", base);
 			return -1;
 		}
 	}
@@ -185,11 +209,12 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
-			return_value =  insert_r(base, bounds, parent->children[RIGHT_CHILD]);
+			return_value =  insert_r(base, bounds, parent->children[RIGHT_CHILD], temp);
 		}
 		else
 		{
-			parent->children[RIGHT_CHILD] = create(base, bounds);
+			parent->children[RIGHT_CHILD] = temp;
+			temp->parent = parent;
 			return_value =  1;
 		}
 	}
@@ -204,15 +229,24 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	{
 		if(parent->children[LEFT] != NULL)
 		{
-			return_value =  insert_r(base, bounds, parent->children[LEFT_CHILD]);
+			return_value =  insert_r(base, bounds, parent->children[LEFT_CHILD], temp);
 		}
 		else
 		{
-			parent->children[LEFT_CHILD] = create(base, bounds);
+			parent->children[LEFT_CHILD] = temp;
+			temp->parent = parent;
 			return_value =  1;
 		}
 	}
 
+
+
+
+	return return_value;
+}
+
+int clean_tree(node * child)
+{
 	/*
 	 * And here's the fun part!
 	 * Now we check for a violation of red-black tree properties!
@@ -221,9 +255,22 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	 *
 	 * Modeled on CS 367 lecture notes
 	 */
-	if(
 
-	return return_value;
+	/*
+	 * If the child's parent is black, we're fine!
+	 */
+	if(!(child->parent->red))
+	{
+		return 1;
+	}
+	else
+	{
+
+		if(child->
+
+	
+
+	}
 }
 
 node * create(void * base, size_t bounds)
@@ -235,10 +282,4 @@ node * create(void * base, size_t bounds)
 	temp->red = 1;
 	temp->free = 0;
 	return temp;
-}
-
-void rotate_l(node * parent)
-{
-
-
 }
