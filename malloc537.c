@@ -18,6 +18,13 @@
  * Checks for zero size!
 */
 
+
+/*TODO: make sure we remove nodes when we do an insert.
+ * When we insert a node that fully covers a freed node,
+ * remove the freed node.
+ */
+
+
 extern node * root;
 
 void *malloc537(size_t size)
@@ -91,7 +98,12 @@ void *realloc537(void *ptr, size_t size)
 {
 	void * return_pointer;
 
-	if(ptr != NULL)
+	/* If the pointer is null, this is just a malloc! let malloc537 handle it.*/
+	if(ptr == NULL)
+	{
+		return malloc537(size);
+	}
+	else
 	{
 		/*HERE WE DO A REMOVE/mark as unused/whatever*/
 		node * temp;
@@ -127,14 +139,34 @@ void memcheck537(void *ptr, size_t size)
 	
 	if(temp == NULL)
 	{
-		/*
-		 * This means we haven't allocated it, or it's not the first byte.
-		 * I think we need a "find next smallest" to check the next thing's range.
-		 * For now, just say it's an error!
-		 */
+		temp = bounds_lookup(ptr);
+		if(temp == NULL)
+		{
+			printf("Pointer at %p was never allocated!", ptr);
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			/* As long as the pointer we're looking up is within the bounds
+			 * of the allocated space, we're fine!
+			 */
+			if((long)((long)ptr + size) <= (long)((long)temp->base + temp->bounds))
+			{
+				return;
+			}
+			else
+			{
+				printf("Pointer at %p is inside pointer %p of size %d, but there's not enough room in the allocated space!\n", ptr, temp->base, (int)temp->bounds);
+			}
+		}
+
 	}
 
-	/*
-	 * Not done. I'm lazy.
-	 */
+	/* If we find a pointer at ptr, check the size! */
+	else if(size > temp->bounds)
+	{
+		printf("Trying to use %d bytes, but the pointer %p only has a size of %d bytes.\n", (int)size, ptr, (int)temp->bounds);
+		exit(EXIT_FAILURE);
+
+	}
 }

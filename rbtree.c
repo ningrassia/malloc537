@@ -319,7 +319,7 @@ int clean_tree(node * child)
 			else{
 
 				child->parent->parent->red = 1;
-				clean_tree(child->parent->parent);
+				return clean_tree(child->parent->parent);
 		
 			}
 
@@ -415,7 +415,7 @@ int clean_tree(node * child)
 			return 1;
 
 		}
-		/*If the parent is the right child and it's parent is red and a left child*/
+		/*If the parent is a left child, and the child is a right child*/
 		if((child->parent->children[1] != NULL) && (child->parent->parent->children[0] != NULL) && (child == child->parent->children[1]) && (child->parent->parent->children[0] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
@@ -425,14 +425,14 @@ int clean_tree(node * child)
 			
 			/*Create temporary node to store grandparent's parent*/
 			tempNode = child->parent->parent->parent;
-			/*set the grandparent to the child's right child. Then we set the gparent's (now the child's child) left child to NULL and parent to child */			
+			/*set the grandparent to the child's right child. Then we set the gparent's (now the child's child) left child to NULL and parent to child */
+			child->parent->parent->children[0] = child->children[1]; 			
 			child->children[1] = child->parent->parent;
-			child->children[1]->children[0] = NULL;
 			child->children[1]->parent = child;
 
 			/*set the parent to the child's left child. Then we set the parents right child to NULL and it's parent to the child*/
+			child->parent->children[1] = child->children[0];
 			child->children[0] = child->parent;
-			child->children[0]->children[1] = NULL;
 			child->children[0]->parent = child;
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
@@ -450,28 +450,29 @@ int clean_tree(node * child)
 				child->parent = tempNode;
 
 			}
+
+			
 			return 1;
 		}
-		/*If the parent is the left child and it's parent is red and a right child*/
+		/*If the parent is a right child and the child is a left child*/
 		if((child->parent->children[0] != NULL) && (child->parent->parent->children[1] != NULL) && (child == child->parent->children[0]) && (child->parent->parent->children[1] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
 			child->red = 0;
 			child->parent->parent->red = 1;
 			
-			/*TODO: CAN I DO THIS?*/
 			/*Create temporary node to store grandparent's parent*/
-			/*don't need to malloc!*/
 			tempNode = child->parent->parent->parent;
 			
 			/*set the grandparent to the child's left child. Then we set the gparent's (now the child's child) right child to NULL and parent to child */
+			child->parent->parent->children[1] = child->children[0]; 
 			child->children[0] = child->parent->parent;
-			child->children[0]->children[1] = NULL;
 			child->children[0]->parent = child;
 
 			/*set the parent to the child's right child. Then we set the parents left child to NULL and it's parent to the child*/
+
+			child->parent->children[0] = child->children[1];
 			child->children[1] = child->parent;
-			child->children[1]->children[1] = NULL;
 			child->children[1]->parent = child;
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
