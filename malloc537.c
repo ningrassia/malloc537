@@ -17,6 +17,9 @@
  * in a hash table.
  * Checks for zero size!
 */
+
+extern node * root;
+
 void *malloc537(size_t size)
 {
 	void * return_ptr;
@@ -28,8 +31,13 @@ void *malloc537(size_t size)
 
 	return_ptr = malloc(size);
 
+	printf("Inserting node: Pointer: %p, bounds %d\n", return_ptr, (int)size);
+
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
+
+	/*Debug! print the tree */
+	print(root, 0);
 	
 	return return_ptr;
 }

@@ -95,8 +95,8 @@ node * bounds_lookup_r(void * base, node * parent)
 			 * If the base is smaller and it's not contained,
 			 */
 
-			node * left_search;
-			node * right_search;
+			node * left_search = NULL;
+			node * right_search = NULL;
 			if(parent->children[LEFT_CHILD] != NULL)
 			left_search = bounds_lookup_r(base, parent->children[LEFT_CHILD]);
 			
@@ -143,7 +143,6 @@ int insert(void * base, size_t bounds)
 	 */
 	if(root == NULL)
 	{
-		temp->root = 1;
 		root = temp;
 		root->red = 0;
 		return 1;
@@ -159,6 +158,10 @@ int insert(void * base, size_t bounds)
 		printf("Error on insert_r return!\n");
 		return insert_return;
 	}
+
+	/*DEBUG - print the tree here. we're lazy.*/
+	print(root, 0);
+
 
 	/*
 	 * And now, we clean up our messy tree!
@@ -182,7 +185,8 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	int return_value = 0;
 
 	/*
-	 * We always want to insert at the bottom of the tree,
+	 * We always want to insert at the
+ bottom of the tree,
 	 * so we insert the node at the bottom first,
 	 * then fix problems!
 	 */
@@ -218,6 +222,7 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
+
 			return_value =  insert_r(base, bounds, parent->children[RIGHT_CHILD], temp);
 		}
 		else
@@ -272,7 +277,8 @@ int clean_tree(node * child)
 	 * If the child's parent is black, we're fine!
 	 */
 
-	if(!(child->parent->red))
+	
+	if((child->parent == NULL) || !(child->parent->red))
 	{
 		return 1;
 	}
@@ -303,7 +309,7 @@ int clean_tree(node * child)
 			child->parent->parent->children[1]->red = 0;
 
 			/* if the grandparent is the root node, we're done!*/
-			if(child->parent->parent->root == 1){
+			if(child->parent->parent->parent == NULL){
 
 				return 1;
 
@@ -374,6 +380,7 @@ int clean_tree(node * child)
 			{
 
 				root = child->parent;
+				/*something heree???*/
 
 			}
 			/*Otherwise we set the great grandparents right child to the parent*/
@@ -389,7 +396,7 @@ int clean_tree(node * child)
 				break the connection but will we get the information before it is lost?*/
 			child->parent->parent = child->parent->parent->parent;
 			
-			/*Set the granparents right child to the parents left. RBT rules make this valid*/
+			/*Set the granparents right child to the parents left. RBT rules make this okay*/
 			tempGparent->children[1] = child->parent->children[0];
 			
 			/*If the parent's left child is not null, we set it's parent to the gparent*/
@@ -495,7 +502,6 @@ node * create(void * base, size_t bounds)
 	temp = malloc(sizeof(node));
 	temp->base = base;
 	temp->bounds = bounds;
-	temp->root = 0;	
 	temp->red = 1;
 	temp->free = 0;
 	return temp;
@@ -504,11 +510,15 @@ node * create(void * base, size_t bounds)
 void print(node * root, int depth)
 {
 	int i;
+	if(root->children[LEFT_CHILD] != NULL)
 	print(root->children[LEFT_CHILD], depth + 1);
 	for(i = 0; i < depth; i++)
 	{
 		printf(".");
 	}
-	printf("Node at %p with size %i\n", root->base, (int)root->bounds);
+
+	printf("red =  %d node at %p with size %i\n",root->red, root->base, (int)root->bounds);
+
+	if(root->children[RIGHT_CHILD] != NULL)
 	print(root->children[RIGHT_CHILD], depth + 1);
 }

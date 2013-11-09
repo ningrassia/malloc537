@@ -24,7 +24,6 @@ typedef struct node
 	struct node * children[2];
 	void * base;
 	size_t bounds;
-	int root;
 	int free;
 	int red;
 }node;
