@@ -23,6 +23,12 @@ node * lookup(void * base)
 	 * Just calls the recursive function
 	 * on the root of the tree.
 	 */
+	if(root == NULL)
+	{
+		printf("root is null\n");
+		exit(EXIT_FAILURE);
+	}
+
 	return lookup_r(base, root);
 }
 
@@ -32,7 +38,20 @@ node * lookup_r(void * base, node * parent)
 	 * return the parent node if it's within the given base
 	 * and bounds!
 	 */
-	if((parent->base == base))
+
+	/* Sanity check. We shouldn't get a null node, but if we do, we can't find the node! */
+	if(parent == NULL)
+	{
+		return NULL;
+	}
+	
+	else if(parent->base == NULL)
+	{
+		printf("bad node encountered.");
+		return NULL;
+	}
+
+	else if((parent->base == base))
 	{
 		return parent;
 	}
@@ -159,8 +178,8 @@ int insert(void * base, size_t bounds)
 		return insert_return;
 	}
 
-	/*DEBUG - print the tree here. we're lazy.*/
-	print(root, 0);
+	/*DEBUG - print the tree here. we're lazy.
+	print(root, 0); */
 
 
 	/*

@@ -38,13 +38,13 @@ void *malloc537(size_t size)
 
 	return_ptr = malloc(size);
 
-	printf("Inserting node: Pointer: %p, bounds %d\n", return_ptr, (int)size);
+	/*printf("Inserting node: Pointer: %p, bounds %d\n", return_ptr, (int)size);*/
 
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
 
-	/*Debug! print the tree */
-	print(root, 0);
+	/*Debug! print the tree 
+	/print(root, 0);*/
 	
 	return return_ptr;
 }
