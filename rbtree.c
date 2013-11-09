@@ -290,19 +290,19 @@ int clean_tree(node * child)
 		 */
 
 		/*NEED TO CHECK IF A CHILD/PARENT EXISTS BEFORE USING IT!*/
-		/* or implement sentinel nodes??? */
 
 		if(child->parent->parent == NULL)
 		{
 			return 1;
 		}
 
-		if((child->parent->parent->children[0]->red == 1) && (child->parent->parent->children[1]->red == 1)){
+		/* if the grandparent has two children, and they're both red*/
+		if((child->parent->parent->children[0] != NULL) && (child->parent->parent->children[1] != NULL) && (child->parent->parent->children[0]->red == 1) && (child->parent->parent->children[1]->red == 1)){
 			
 			child->parent->parent->children[0]->red = 0;
 			child->parent->parent->children[1]->red = 0;
 
-			/* if the grandparents parent is NULL then it is the root node and we keep it black*/
+			/* if the grandparent is the root node, we're done!*/
 			if(child->parent->parent->root == 1){
 
 				return 1;
@@ -320,17 +320,11 @@ int clean_tree(node * child)
 		}
 
 		/*If this node is the left child of a left child, then we need to restructure*/
-		if( (child->parent->parent->children[0] == child->parent) && (child == child->parent->children[0]) )		
+		if((child->parent->parent->children[0] != NULL) && (child->parent->children[0] != NULL) && (child->parent->parent->children[0] == child->parent) && (child == child->parent->children[0]) )		
 		{
-	
-			
 			child->parent->red = 0;
 			child->parent->parent->red = 1;
-			
-			/*TODO: Is this malloc valid? Does it do what I want it to? I want to 
-			 *	create a temporary node with all the grandparents attributes,
-			 *	otherwise we will lose its pointers
-			 */
+
 			tempGparent = child->parent->parent;
 			
 			/*If the grandparent's parent is null, it is the root*/
@@ -366,7 +360,7 @@ int clean_tree(node * child)
 		}
 
 		/*If this node is the right child of a right child, then we need to restructure*/
-		if( (child->parent->parent->children[1] == child->parent) && (child == child->parent->children[1]) )		
+		if((child->parent->parent->children[1] != NULL) && (child->parent->children[1] != NULL) && (child->parent->parent->children[1] == child->parent) && (child == child->parent->children[1]) )		
 		{
 	
 			/*Set parent to black and grandparent to red*/
@@ -415,7 +409,7 @@ int clean_tree(node * child)
 
 		}
 		/*If the parent is the right child and it's parent is red and a left child*/
-		if((child == child->parent->children[1]) && (child->parent->parent->children[0] == child->parent))
+		if((child->parent->children[1] != NULL) && (child->parent->parent->children[0] != NULL) && (child == child->parent->children[1]) && (child->parent->parent->children[0] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
 			child->red = 0;
@@ -452,7 +446,7 @@ int clean_tree(node * child)
 			return 1;
 		}
 		/*If the parent is the left child and it's parent is red and a right child*/
-		if((child == child->parent->children[0]) && (child->parent->parent->children[1] == child->parent))
+		if((child->parent->children[0] != NULL) && (child->parent->parent->children[1] != NULL) && (child == child->parent->children[0]) && (child->parent->parent->children[1] == child->parent))
 		{
 			/*Change this node's color to black and set the granparent to red*/
 			child->red = 0;
