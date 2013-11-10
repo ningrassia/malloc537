@@ -8,7 +8,6 @@
  * http://www.cs.auckland.ac.nz/software/AlgAnim/red_black.html
  * and
  * http://videolectures.net/mit6046jf05_demaine_lec10/
- *
  */
 #include <sys/types.h>
 
@@ -53,6 +52,15 @@ node * bounds_lookup(void * base);
  */
 node * bounds_lookup_r(void * base, node * parent);
 
+/*
+ * Find a node within the given base and bounds.
+ */
+node * contained_lookup(void * base, size_t bounds);
+
+/*
+ * Recursive function for contained_lookup.
+ */
+node * contained_lookup_r(void * base, size_t bounds, node * parent);
 
 /* 
  * Inserts a node into the tree. Self-balancing!
