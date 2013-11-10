@@ -30,7 +30,7 @@ extern node * root;
 void *malloc537(size_t size)
 {
 	void * return_ptr;
-
+	node * remove_node = NULL;
 	if(size == 0)
 	{
 		printf("Allocating a pointer of size 0\n");
@@ -39,12 +39,24 @@ void *malloc537(size_t size)
 	return_ptr = malloc(size);
 
 	/*printf("Inserting node: Pointer: %p, bounds %d\n", return_ptr, (int)size);*/
+	/*
+	 * Need to find all nodes within range base+1 to size, and delete them.
+	 */
+	/*
+	remove_node = contained_lookup(return_ptr, size);
+	while(remove_node != NULL)
+	{
+		*PUT A DELETE HERE*
+		remove_node = contained_lookup(return_ptr, size);
+	}
+	*/
 
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
 
-	/*Debug! print the tree 
-	/print(root, 0);*/
+	/*Debug! print the tree*/ 
+	/*print(root, 0);
+	printf("\n");*/
 	
 	return return_ptr;
 }
@@ -57,7 +69,13 @@ void free537(void *ptr)
 {
 	node * temp;
 	temp = lookup(ptr);
-	
+
+	/* check for a null pointer to free */
+	if(ptr == NULL)
+	{
+		printf("Trying to free a null pointer!\n");
+		exit(EXIT_FAILURE);
+	}
 	/*
 	 * Check to make sure we have a node at that pointer!
 	 */
@@ -88,6 +106,10 @@ void free537(void *ptr)
 
 	temp->free = 1;
 	free(ptr);
+	/*
+	print(root, 0);
+	printf("\n");
+	*/
 }
 
 /*
@@ -97,6 +119,7 @@ void free537(void *ptr)
 void *realloc537(void *ptr, size_t size)
 {
 	void * return_pointer;
+	node * remove_node = NULL;
 
 	/* If the pointer is null, this is just a malloc! let malloc537 handle it.*/
 	if(ptr == NULL)
@@ -115,9 +138,26 @@ void *realloc537(void *ptr, size_t size)
 
 	if(return_pointer != NULL)
 	{
-		/*HERE WE DO AN INSERT*/ 
+
+		/*
+		 * Need to find all nodes within range base+1 to size, and delete them.
+		 */
+		/*	
+		remove_node = contained_lookup(return_pointer, size);
+		while(remove_node != NULL)
+		{
+			*PUT A DELETE HERE*
+			remove_node = contained_lookup(return_pointer, size);
+		}
+		*/
+			
+		/*HERE WE DO AN INSERT*/
 		insert(ptr, size);
 	}
+	/*
+	print(root, 0);
+	printf("\n");
+	*/
 	return return_pointer;
 }
 
@@ -142,7 +182,7 @@ void memcheck537(void *ptr, size_t size)
 		temp = bounds_lookup(ptr);
 		if(temp == NULL)
 		{
-			printf("Pointer at %p was never allocated!", ptr);
+			printf("Pointer at %p was never allocated!\n", ptr);
 			exit(EXIT_FAILURE);
 		}
 		else
