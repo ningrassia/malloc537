@@ -516,6 +516,66 @@ int clean_tree(node * child)
 	return 0;
 }
 
+int delete_node (void * base)
+{
+	node * child = NULL;
+	node * temp = NULL;
+	temp = lookup(base);
+	if (temp == NULL)
+	{
+		printf("You cannot delete a node for a base that is not in the tree.");
+	}
+	/*If node to be deleted has 2 children, give that node the value of its in order
+	 *predecessor. We will then delete that node.
+	 */
+	if (temp->children[LEFT_CHILD] != NULL && temp->children[RIGHT_CHILD] != NULL)
+	{
+		node * predecessor = NULL;
+		predecessor = temp;
+		while (predecessor->children[RIGHT_CHILD] != NULL)
+		{
+			predecessor = predecessor->children[RIGHT_CHILD];
+		}
+		temp->base = predecessor->base;
+		temp->bounds = predecessor->bounds;		
+		temp = predecessor;
+	}
+	/*creating child node. We will repalce our temporary node with it later*/
+	if (temp->children[LEFT_CHILD] == NULL)
+	{
+		child = temp->children[RIGHT_CHILD];
+	}
+
+	if (temp->children[RIGHT_CHILD] == NULL)
+	{
+		child = temp->children[LEFT_CHILD];
+	}
+
+	/*If the node we are now deleting (temp) is red, we are finished. If it is black, we have to 
+	 *rearrange the tree*/
+	if (temp->red = 0)
+	{
+		temp->red = child->red;
+		delete_rearrangement(temp);
+	}
+
+}
+
+void delete_rearrangement(node * node)
+{
+	/*if the node has become the root, we are fine.*/
+	if (node->parent == NULL)
+	{
+		return;
+	}
+
+	if(node->parent->children[0] == node)
+	{
+	
+	}
+
+}
+
 node * create(void * base, size_t bounds)
 {
 	node * temp;
@@ -525,6 +585,59 @@ node * create(void * base, size_t bounds)
 	temp->red = 1;
 	temp->free = 0;
 	return temp;
+}
+
+void rotate_l(node * node){
+{
+	node temp = node->children[1];
+	change_node(node, temp);
+	node->children[1] = temp->left;
+	if (temp->children[0] != NULL)
+	{
+		temp->children[0]->parent = node
+	}
+	temp->left = node;
+	node->parent = temp;
+
+}
+
+void rotate_r(node * node){
+{
+	node temp = node->children[0];
+	change_node(node, temp);
+	node->children[0] = temp->right;
+	if (temp->right!= NULL)
+	{
+		temp->children[1]->parent = node
+	}
+	temp->children[1] = node;
+	node->parent = temp;
+
+}
+
+void change_node(node * old, node * new)
+{
+	if (old->parent == NULL)
+	{
+		root = new;
+	}
+	else
+	{
+		if(old == old->parent->children[LEFT_CHILD]
+		{
+			old->parent->children[LEFT_CHILD] = new;
+			
+		}
+
+		else
+		{
+			old->parent->children[RIGHT_CHILD] = new;
+		}
+	}
+	if (new != NULL)
+	{
+		new->parent = old-parent;
+	}
 }
 
 void print(node * root, int depth)
