@@ -86,6 +86,14 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp);
 int clean_tree(node * child);
 
 /* 
+ * Finds a node, deletes it
+ * and cleans the rest of the tree
+ * accordingly
+ */
+
+int delete_node (void * base);
+
+/* 
  * Another internal function!
  * Returns a red, unfreed node with the specified
  * base and bounds.
