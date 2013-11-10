@@ -46,7 +46,7 @@ void *malloc537(size_t size)
 	remove_node = contained_lookup(return_ptr, size);
 	while(remove_node != NULL)
 	{
-		*PUT A DELETE HERE*
+		delete_node(remove_node->base);	
 		remove_node = contained_lookup(return_ptr, size);
 	}
 	
@@ -146,7 +146,7 @@ void *realloc537(void *ptr, size_t size)
 		remove_node = contained_lookup(return_pointer, size);
 		while(remove_node != NULL)
 		{
-			delete(remove_node->base);	
+			delete_node(remove_node->base);	
 			remove_node = contained_lookup(return_pointer, size);
 		}
 		

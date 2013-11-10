@@ -656,18 +656,20 @@ int delete_node (void * base)
 
         /*If the node we are now deleting (temp) is red, we are finished. If it is black, we have to 
  *          *rearrange the tree*/
-        if (temp->red = 0)
+        if (temp->red == 0)
         {
                 temp->red = child->red;
                 delete_rearrangement(temp);
         }
+
+	change_node(temp, child);
+	free(temp);
 
 }
 
 void delete_rearrangement(node * node)
 {
         /*if the node has become the root, we are fine.*/
-	int stop = 0;
         if (node->parent == NULL)
         {
                 return;
@@ -675,122 +677,37 @@ void delete_rearrangement(node * node)
 
         if(node->parent->children[0] == node)
         {
-		if (node->parent->children[1]->red = 1)
-		{
-			node->parent->children[1]->red = 0;
-			node->parent->red = 1;
-			rotate_l(n->parent);
-		}
         
         }
-	if(node->parent->children[1] == node)
-        {
-		if (node->parent->children[0]->red = 1)
-		{
-			node->parent->children[0]->red = 0;
-			node->parent->red = 1;
-			rotate_r(n->parent);
-		}
-        
-        }
-	
-	
-	if(node->parent->children[0] == node)
-        {
-			if ((node->parent->red == 0) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
-			{
-				node->parent->children[RIGHT_CHILD]->red = 1;
-				delete_rearrangment(node->parent);
-			}
-	}
-
-	if(node->parent->children[1] == node)
-        {
-			if ((node->parent->red == 0) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0)
-			{
-				node->parent->children[LEFT_CHILD]->red = 1;
-				delete_rearrangment(node->parent);
-			}
-	}
-
-	if(node->parent->children[0] == node)
-        {
-			if ((node->parent->red == 1) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
-			{
-				node->parent->red = 0;				
-				node->parent->children[RIGHT_CHILD]->red = 1;
-				
-			}
-	}
-
-	if(node->parent->children[1] == node)
-        {
-			if ((node->parent->red == 1) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0))
-			{
-				node->parent->red = 0;				
-				node->parent->children[LEFT_CHILD]->red = 1;
-			}
-	}
-
-	if(node->parent->children[0] == node)
-        {
-			if ((node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 1) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
-			{
-				node->parent->children[1]->red = 1;
-				node->parent->children[1]->children[LEFT_CHILD]->red = 0;
-				rotate_r(node->parent->children[1]);
-				delete_rearrangement(node);
-			}
-	}
-
-	if(node->parent->children[1] == node)
-        {
-			if ((node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 1))
-			{
-				node->parent->children[0]->red = 1;
-				node->parent->children[0]->children[RIGHT_CHILD]->red = 0;
-				rotate_l(node->parent->children[0]);
-				delete_rearrangement(node);
-			}
-	}
-	
-	if((node->parent->children[0] == node) && (node->parent->children[1]->red == node->red))
-        {
-		node->parent->red = 0;
-		node->parent->children[1]->red = 0;
-		rotate_l(n->parent);	
-	}
-
-	if((node->parent->children[1] == node) && (node->parent->children[0]->red == node->red))
-        {
-		node->parent->red = 0;
-		node->parent->children[0]->red = 0;
-		rotate_r(n->parent);	
-	}
-}
-
-void rotate_l(node * node){
-{
-        node * temp = node->children[1];
-        change_node(node, temp);
-        node->children[1] = temp->left;
-        if (temp->children[0] != NULL)
-        {
-                temp->children[0]->parent = node
-        }
-        temp->left = node;
-        node->parent = temp;
 
 }
 
-void rotate_r(node * node){
+void rotate_l(node * node)
 {
-        node * temp = node->children[0];
+        node * templ;
+
+	templ = node->children[1];
+        change_node(node, templ);
+        node->children[1] = templ->left;
+        if (templ->children[0] != NULL)
+        {
+                templ->children[0]->parent = node;
+        }
+        templ->left = node;
+        node->parent = templ;
+
+}
+
+void rotate_r(node * node)
+{
+        node * temp;
+
+	temp = node->children[0];
         change_node(node, temp);
         node->children[0] = temp->right;
         if (temp->right!= NULL)
         {
-                temp->children[1]->parent = node
+                temp->children[1]->parent = node;
         }
         temp->children[1] = node;
         node->parent = temp;
