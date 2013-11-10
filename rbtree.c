@@ -352,6 +352,7 @@ int clean_tree(node * child)
 
 	node * tempNode;
 	node * tempGparent;
+	int whichChild = 0;
 	/*
 	 * And here's the fun part!
 	 * Now we check for a violation of red-black tree properties!
@@ -513,6 +514,15 @@ int clean_tree(node * child)
 			
 			/*Create temporary node to store grandparent's parent*/
 			tempNode = child->parent->parent->parent;
+
+			/*
+			 * Also need to find which child the grandparent was! 0 is left, 1 is right
+			 * This defaults to 0, so just set to 1 if it's a right child.
+			 */
+			if(child->parent->parent->parent->children[RIGHT_CHILD] == child->parent->parent)
+			whichChild = 1;
+
+
 			/*set the grandparent to the child's right child. Then we set the gparent's (now the child's child) left child to NULL and parent to child */
 			child->parent->parent->children[0] = child->children[1]; 			
 			child->children[1] = child->parent->parent;
@@ -538,6 +548,7 @@ int clean_tree(node * child)
 			{
 
 				child->parent = tempNode;
+				tempNode->children[whichChild] = child;
 
 			}
 
@@ -553,6 +564,14 @@ int clean_tree(node * child)
 			
 			/*Create temporary node to store grandparent's parent*/
 			tempNode = child->parent->parent->parent;
+
+			/*
+			 * Also need to find which child the grandparent was! 0 is left, 1 is right
+			 * This defaults to 0, so just set to 1 if it's a right child.
+			 */
+			if(child->parent->parent->parent->children[RIGHT_CHILD] == child->parent->parent)
+			whichChild = 1;
+
 			
 			/*set the grandparent to the child's left child. Then we set the gparent's (now the child's child) right child to NULL and parent to child */
 			child->parent->parent->children[1] = child->children[0]; 
@@ -582,6 +601,8 @@ int clean_tree(node * child)
 			{
 
 				child->parent = tempNode;
+				tempNode->children[whichChild] = child;
+
 
 			}
 			return 1;

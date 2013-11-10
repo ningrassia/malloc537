@@ -167,7 +167,7 @@ void memcheck537(void *ptr, size_t size)
 		temp = bounds_lookup(ptr);
 		if(temp == NULL)
 		{
-			printf("Pointer at %p was never allocated!", ptr);
+			printf("Pointer at %p was never allocated!\n", ptr);
 			exit(EXIT_FAILURE);
 		}
 		else
