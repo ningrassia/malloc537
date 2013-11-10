@@ -517,11 +517,13 @@ int clean_tree(node * child)
 			child->parent->parent->children[0] = child->children[1]; 			
 			child->children[1] = child->parent->parent;
 			child->children[1]->parent = child;
+			child->children[1]->children[0]->parent = child->children[1];
 
 			/*set the parent to the child's left child. Then we set the parents right child to NULL and it's parent to the child*/
 			child->parent->children[1] = child->children[0];
 			child->children[0] = child->parent;
 			child->children[0]->parent = child;
+			child->children[0]->children[1]->parent = child->children[0];
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
 			if (tempNode == NULL)
@@ -556,12 +558,16 @@ int clean_tree(node * child)
 			child->parent->parent->children[1] = child->children[0]; 
 			child->children[0] = child->parent->parent;
 			child->children[0]->parent = child;
+			child->children[0]->children[1]->parent = child->children[0];
+
 
 			/*set the parent to the child's right child. Then we set the parents left child to NULL and it's parent to the child*/
 
 			child->parent->children[0] = child->children[1];
 			child->children[1] = child->parent;
 			child->children[1]->parent = child;
+			child->children[1]->children[0]->parent = child->children[1];
+
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
 			if (tempNode == NULL)

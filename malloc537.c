@@ -30,7 +30,7 @@ extern node * root;
 void *malloc537(size_t size)
 {
 	void * return_ptr;
-
+	node * remove_node = NULL;
 	if(size == 0)
 	{
 		printf("Allocating a pointer of size 0\n");
@@ -42,13 +42,14 @@ void *malloc537(size_t size)
 	/*
 	 * Need to find all nodes within range base+1 to size, and delete them.
 	 */
-
-	node * remove_node = contained_lookup(return_ptr, size)
+	/*
+	remove_node = contained_lookup(return_ptr, size);
 	while(remove_node != NULL)
 	{
-		/*PUT A DELETE HERE*/
+		*PUT A DELETE HERE*
 		remove_node = contained_lookup(return_ptr, size);
 	}
+	*/
 
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
@@ -107,6 +108,7 @@ void free537(void *ptr)
 void *realloc537(void *ptr, size_t size)
 {
 	void * return_pointer;
+	node * remove_node = NULL;
 
 	/* If the pointer is null, this is just a malloc! let malloc537 handle it.*/
 	if(ptr == NULL)
@@ -129,14 +131,15 @@ void *realloc537(void *ptr, size_t size)
 		/*
 		 * Need to find all nodes within range base+1 to size, and delete them.
 		 */
-	
-		node * remove_node = contained_lookup(return_ptr, size)
+		/*	
+		remove_node = contained_lookup(return_pointer, size);
 		while(remove_node != NULL)
 		{
-			/*PUT A DELETE HERE*/
-			remove_node = contained_lookup(return_ptr, size);
+			*PUT A DELETE HERE*
+			remove_node = contained_lookup(return_pointer, size);
 		}
-	
+		*/
+			
 		/*HERE WE DO AN INSERT*/
 		insert(ptr, size);
 	}
