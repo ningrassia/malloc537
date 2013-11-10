@@ -254,12 +254,18 @@ int insert(void * base, size_t bounds)
 	/*
 	 * And now, we clean up our messy tree!
 	 */
+
 	clean_tree_return = clean_tree(temp);
 	if(clean_tree_return < 0)
 	{
 		printf("Error on clean_tree return!\n");
 		return clean_tree_return;
 	}
+
+	/*print the node we've added.
+	printf("red = %d node at %p with base %p size %i, parent %p, and children %p %p\n",temp->red, (void *)temp ,temp->base, (int)temp->bounds, (void *)temp->parent, (void *)temp->children[LEFT_CHILD], (void *)temp->children[RIGHT_CHILD]);
+	*/
+
 
 	/*
 	 * Return 1 on a success.
@@ -270,8 +276,6 @@ int insert(void * base, size_t bounds)
 
 int insert_r(void * base, size_t bounds, node * parent, node * temp)
 {
-	int return_value = 0;
-
 	/*
 	 * We always want to insert at the
  bottom of the tree,
@@ -290,7 +294,7 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 		{
 			parent->bounds = bounds;
 			parent->free = 0;
-			return_value = 1;
+			return 1;
 		}
 		else
 		{
@@ -310,14 +314,13 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	{
 		if(parent->children[RIGHT_CHILD] != NULL)
 		{
-
-			return_value =  insert_r(base, bounds, parent->children[RIGHT_CHILD], temp);
+			return insert_r(base, bounds, parent->children[RIGHT_CHILD], temp);
 		}
 		else
 		{
 			parent->children[RIGHT_CHILD] = temp;
 			temp->parent = parent;
-			return_value =  1;
+			return 1;
 		}
 	}
 	
@@ -331,20 +334,20 @@ int insert_r(void * base, size_t bounds, node * parent, node * temp)
 	{
 		if(parent->children[LEFT_CHILD] != NULL)
 		{
-			return_value =  insert_r(base, bounds, parent->children[LEFT_CHILD], temp);
+			return insert_r(base, bounds, parent->children[LEFT_CHILD], temp);
 		}
 		else
 		{
 			parent->children[LEFT_CHILD] = temp;
 			temp->parent = parent;
-			return_value =  1;
+			return 1;
 		}
 	}
 
 
 
 
-	return return_value;
+	return 0;
 }
 
 int clean_tree(node * child)
@@ -373,7 +376,8 @@ int clean_tree(node * child)
 	}
 	else
 	{
-		/*
+		/*	printf("red = %d node at %p with base %p size %i, parent %p, and children %p %p\n",root->red, (void *)root,root->base, (int)root->bounds, (void *)root->parent, (void *)root->children[LEFT_CHILD], (void *)root->children[RIGHT_CHILD]);
+
 		 * If the child's parent and the parent's sibling is red, just change their color to black and
 		 * change the grandparent to red. If the grandparent is the root node, then just keep it
 		 * as black to keep the red/black properties
@@ -620,6 +624,9 @@ node * create(void * base, size_t bounds)
 	temp->bounds = bounds;
 	temp->red = 1;
 	temp->free = 0;
+	temp->parent = NULL;
+	temp->children[LEFT_CHILD] = NULL;
+	temp->children[RIGHT_CHILD] = NULL;
 	return temp;
 }
 
@@ -633,7 +640,7 @@ void print(node * root, int depth)
 		printf(".");
 	}
 
-	printf("red =  %d node at %p with size %i\n",root->red, root->base, (int)root->bounds);
+	printf("red = %d node at %p with base %p size %i, parent %p, and children %p %p\n",root->red, (void *)root,root->base, (int)root->bounds, (void *)root->parent, (void *)root->children[LEFT_CHILD], (void *)root->children[RIGHT_CHILD]);
 
 	if(root->children[RIGHT_CHILD] != NULL)
 	print(root->children[RIGHT_CHILD], depth + 1);

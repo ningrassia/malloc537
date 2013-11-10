@@ -54,8 +54,9 @@ void *malloc537(size_t size)
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
 
-	/*Debug! print the tree 
-	/print(root, 0);*/
+	/*Debug! print the tree*/ 
+	/*print(root, 0);
+	printf("\n");*/
 	
 	return return_ptr;
 }
@@ -68,7 +69,13 @@ void free537(void *ptr)
 {
 	node * temp;
 	temp = lookup(ptr);
-	
+
+	/* check for a null pointer to free */
+	if(ptr == NULL)
+	{
+		printf("Trying to free a null pointer!\n");
+		exit(EXIT_FAILURE);
+	}
 	/*
 	 * Check to make sure we have a node at that pointer!
 	 */
@@ -99,6 +106,10 @@ void free537(void *ptr)
 
 	temp->free = 1;
 	free(ptr);
+	/*
+	print(root, 0);
+	printf("\n");
+	*/
 }
 
 /*
@@ -143,6 +154,10 @@ void *realloc537(void *ptr, size_t size)
 		/*HERE WE DO AN INSERT*/
 		insert(ptr, size);
 	}
+	/*
+	print(root, 0);
+	printf("\n");
+	*/
 	return return_pointer;
 }
 
