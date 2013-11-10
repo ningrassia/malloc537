@@ -394,7 +394,6 @@ int clean_tree(node * child)
 		{
 			return 1;
 		}
-
 		/* if the grandparent has two children, and they're both red*/
 		if((child->parent->parent->children[0] != NULL) && (child->parent->parent->children[1] != NULL) && (child->parent->parent->children[0]->red == 1) && (child->parent->parent->children[1]->red == 1)){
 			
@@ -531,12 +530,14 @@ int clean_tree(node * child)
 			child->parent->parent->children[0] = child->children[1]; 			
 			child->children[1] = child->parent->parent;
 			child->children[1]->parent = child;
+			if(child->children[1]->children[0] != NULL)
 			child->children[1]->children[0]->parent = child->children[1];
 
 			/*set the parent to the child's left child. Then we set the parents right child to NULL and it's parent to the child*/
 			child->parent->children[1] = child->children[0];
 			child->children[0] = child->parent;
 			child->children[0]->parent = child;
+			if(child->children[0]->children[1] != NULL)
 			child->children[0]->children[1]->parent = child->children[0];
 			
 			/*If the grandparent's parent was null, then we set the child to the root*/
@@ -581,6 +582,7 @@ int clean_tree(node * child)
 			child->parent->parent->children[1] = child->children[0]; 
 			child->children[0] = child->parent->parent;
 			child->children[0]->parent = child;
+			if(child->children[0]->children[1] != NULL)
 			child->children[0]->children[1]->parent = child->children[0];
 
 
@@ -589,6 +591,7 @@ int clean_tree(node * child)
 			child->parent->children[0] = child->children[1];
 			child->children[1] = child->parent;
 			child->children[1]->parent = child;
+			if(child->children[1]->children[0] != NULL)
 			child->children[1]->children[0]->parent = child->children[1];
 
 			
