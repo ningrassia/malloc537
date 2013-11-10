@@ -93,6 +93,25 @@ int clean_tree(node * child);
 
 int delete_node (void * base);
 
+/*
+ * Starts the delete function!
+ * Internal function.
+ */
+void delete_rearrangement(node * node);
+
+
+/*
+ * Dedicated node rotations used for delete!
+ */
+void rotate_l(node * node);
+void rotate_r(node * node);
+
+/*
+ * Swap two nodes!
+ */
+void change_node(node * old, node * new);
+
+
 /* 
  * Another internal function!
  * Returns a red, unfreed node with the specified

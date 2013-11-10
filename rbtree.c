@@ -667,6 +667,7 @@ int delete_node (void * base)
 void delete_rearrangement(node * node)
 {
         /*if the node has become the root, we are fine.*/
+	int stop = 0;
         if (node->parent == NULL)
         {
                 return;
@@ -674,14 +675,103 @@ void delete_rearrangement(node * node)
 
         if(node->parent->children[0] == node)
         {
+		if (node->parent->children[1]->red = 1)
+		{
+			node->parent->children[1]->red = 0;
+			node->parent->red = 1;
+			rotate_l(n->parent);
+		}
         
         }
+	if(node->parent->children[1] == node)
+        {
+		if (node->parent->children[0]->red = 1)
+		{
+			node->parent->children[0]->red = 0;
+			node->parent->red = 1;
+			rotate_r(n->parent);
+		}
+        
+        }
+	
+	
+	if(node->parent->children[0] == node)
+        {
+			if ((node->parent->red == 0) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			{
+				node->parent->children[RIGHT_CHILD]->red = 1;
+				delete_rearrangment(node->parent);
+			}
+	}
 
+	if(node->parent->children[1] == node)
+        {
+			if ((node->parent->red == 0) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			{
+				node->parent->children[LEFT_CHILD]->red = 1;
+				delete_rearrangment(node->parent);
+			}
+	}
+
+	if(node->parent->children[0] == node)
+        {
+			if ((node->parent->red == 1) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			{
+				node->parent->red = 0;				
+				node->parent->children[RIGHT_CHILD]->red = 1;
+				
+			}
+	}
+
+	if(node->parent->children[1] == node)
+        {
+			if ((node->parent->red == 1) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0))
+			{
+				node->parent->red = 0;				
+				node->parent->children[LEFT_CHILD]->red = 1;
+			}
+	}
+
+	if(node->parent->children[0] == node)
+        {
+			if ((node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 1) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			{
+				node->parent->children[1]->red = 1;
+				node->parent->children[1]->children[LEFT_CHILD]->red = 0;
+				rotate_r(node->parent->children[1]);
+				delete_rearrangement(node);
+			}
+	}
+
+	if(node->parent->children[1] == node)
+        {
+			if ((node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 1))
+			{
+				node->parent->children[0]->red = 1;
+				node->parent->children[0]->children[RIGHT_CHILD]->red = 0;
+				rotate_l(node->parent->children[0]);
+				delete_rearrangement(node);
+			}
+	}
+	
+	if((node->parent->children[0] == node) && (node->parent->children[1]->red == node->red))
+        {
+		node->parent->red = 0;
+		node->parent->children[1]->red = 0;
+		rotate_l(n->parent);	
+	}
+
+	if((node->parent->children[1] == node) && (node->parent->children[0]->red == node->red))
+        {
+		node->parent->red = 0;
+		node->parent->children[0]->red = 0;
+		rotate_r(n->parent);	
+	}
 }
 
 void rotate_l(node * node){
 {
-        node temp = node->children[1];
+        node * temp = node->children[1];
         change_node(node, temp);
         node->children[1] = temp->left;
         if (temp->children[0] != NULL)
@@ -695,7 +785,7 @@ void rotate_l(node * node){
 
 void rotate_r(node * node){
 {
-        node temp = node->children[0];
+        node * temp = node->children[0];
         change_node(node, temp);
         node->children[0] = temp->right;
         if (temp->right!= NULL)
