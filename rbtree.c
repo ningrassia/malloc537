@@ -142,6 +142,75 @@ node * bounds_lookup_r(void * base, node * parent)
 	}
 }
 
+node * contained_lookup(void * base, size_t bounds)
+{
+	return contained_lookup_r(base, bounds, root);
+}
+
+node * contained_lookup_r(void * base, size_t bounds, node * parent)
+{
+	/*
+	 * If we somehow get a null node, return NULL.
+	 */
+	if(parent == NULL)
+	return NULL;
+
+
+	/*
+	 * If the current node's base is too small, look at the right child.
+	 */
+
+	else if(parent->base <= base)
+	{
+		if(parent->children[RIGHT_CHILD] != NULL)
+		return contained_lookup_r(base, bounds, parent->children[RIGHT_CHILD]);
+		else
+		return NULL;
+	}
+
+	/*
+	 * If the current node's base is too big, look at the left child.
+	 */
+
+	else if(((long)parent->base + parent->bounds) >= ((long)base + bounds))
+	{
+		if(parent->children[LEFT_CHILD] != NULL)
+		return contained_lookup_r(base, bounds, parent->children[LEFT_CHILD]);
+		else
+		return NULL;
+	}
+	/*
+	 * If our node's base is in range, check the size and return if it's small enough and free.
+	 * Otherwise, check both children if the exist.
+	 */
+	else if(parent->base > base && ((long)parent->base + parent->bounds) < ((long)base + bounds) && parent->free)
+	{
+		return parent;
+	}
+
+	/*
+	 * Here we search both children, and return one of the results.
+	 * We prefer the left child arbitrarily.
+	 */
+	else
+	{
+		node * left_return = NULL;
+		node * right_return = NULL;
+
+		if(parent->children[LEFT_CHILD] != NULL)
+		left_return = contained_lookup_r(base, bounds, parent->children[LEFT_CHILD]);
+		
+		if(parent->children[RIGHT_CHILD] != NULL)
+		right_return = contained_lookup_r(base, bounds, parent->children[RIGHT_CHILD]);
+
+		if(left_return != NULL)
+		return left_return;
+		else
+		return right_return;
+
+	}
+}
+
 int insert(void * base, size_t bounds)
 {
 

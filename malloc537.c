@@ -39,6 +39,16 @@ void *malloc537(size_t size)
 	return_ptr = malloc(size);
 
 	/*printf("Inserting node: Pointer: %p, bounds %d\n", return_ptr, (int)size);*/
+	/*
+	 * Need to find all nodes within range base+1 to size, and delete them.
+	 */
+
+	node * remove_node = contained_lookup(return_ptr, size)
+	while(remove_node != NULL)
+	{
+		/*PUT A DELETE HERE*/
+		remove_node = contained_lookup(return_ptr, size);
+	}
 
 	/*HERE WE DO AN INSERT!*/
 	insert(return_ptr, size);
@@ -115,7 +125,19 @@ void *realloc537(void *ptr, size_t size)
 
 	if(return_pointer != NULL)
 	{
-		/*HERE WE DO AN INSERT*/ 
+
+		/*
+		 * Need to find all nodes within range base+1 to size, and delete them.
+		 */
+	
+		node * remove_node = contained_lookup(return_ptr, size)
+		while(remove_node != NULL)
+		{
+			/*PUT A DELETE HERE*/
+			remove_node = contained_lookup(return_ptr, size);
+		}
+	
+		/*HERE WE DO AN INSERT*/
 		insert(ptr, size);
 	}
 	return return_pointer;
