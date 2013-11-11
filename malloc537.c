@@ -19,14 +19,26 @@
 */
 
 
-/*TODO: make sure we remove nodes when we do an insert.
+/*
+ * TODO: make sure we remove nodes when we do an insert.
  * When we insert a node that fully covers a freed node,
  * remove the freed node.
+ *
+ * NOTE: our contained_lookup function, which should return a
+ * freed node that is covered by what we just allocated, doesn't
+ * seem to work. So we never delete any nodes from the tree.
+ * Not sure if that's due to the behavior of 537ps, or
+ * our code.
  */
 
 
 extern node * root;
 
+/*
+ * malloc537 is a wrapper around malloc.
+ * It add the tuple (base, bounds) to a range
+ * tree to track memory allocation!
+ */
 void *malloc537(size_t size)
 {
 	void * return_ptr;
@@ -64,8 +76,9 @@ void *malloc537(size_t size)
 }
 
 /*
- * Check to make sure a 537malloc-family command allocated the memory
- * in ptr, and then calls free on the pointer.
+ * Checks to make sure a 537malloc-family command allocated the memory
+ * in ptr, and then calls free on the pointer. If an error is detected,
+ * prints a descriptive message and closes with EXIT_FAILURE.
 */
 void free537(void *ptr)
 {
@@ -129,6 +142,12 @@ void *realloc537(void *ptr, size_t size)
 	{
 		return malloc537(size);
 	}
+	/* If the size is null, it's just a free.*/
+	else if(size == 0)
+	{
+		free537(ptr);
+		return NULL;
+	}
 	else
 	{
 		/*HERE WE DO A REMOVE/mark as unused/whatever*/
@@ -139,24 +158,19 @@ void *realloc537(void *ptr, size_t size)
 	
 	return_pointer = realloc(ptr, size);
 
-	if(return_pointer != NULL)
+	/* Before we insert, remove any nodes that will be overlapped.*/
+	/*
+	 * Need to find all nodes within range base+1 to size, and delete them.
+	 */
+			
+	remove_node = contained_lookup(return_pointer, size);
+	while(remove_node != NULL)
 	{
-
-		/*
-		 * Need to find all nodes within range base+1 to size, and delete them.
-		 */
-			
+		delete_node(remove_node->base);	
 		remove_node = contained_lookup(return_pointer, size);
-		while(remove_node != NULL)
-		{
-			delete_node(remove_node->base);	
-			remove_node = contained_lookup(return_pointer, size);
-		}
-		
-			
-		/*HERE WE DO AN INSERT*/
-		insert(ptr, size);
 	}
+
+	insert(ptr, size);
 	/*
 	print(root, 0);
 	printf("\n");
@@ -201,6 +215,7 @@ void memcheck537(void *ptr, size_t size)
 			else
 			{
 				printf("Pointer at %p is inside pointer %p of size %d, but there's not enough room in the allocated space!\n", ptr, temp->base, (int)temp->bounds);
+				exit(EXIT_FAILURE);
 			}
 		}
 
