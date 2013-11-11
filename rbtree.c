@@ -16,7 +16,8 @@
  */
 node * root;
 
-
+/*These two functions help rotate our tree when we delete a node. It makes the correct
+ *connections to parent's, children, etc.*/
 void rotate_l(node * lnode)
 {
         node * templ = NULL;
@@ -714,7 +715,9 @@ void delete_rearrangement(node * node)
         {
                 return;
         }
-
+	/*In these next two cases (mirror images of each other), node has a red sibling. We will change the
+	 *color of n's sibling and rotate around the parent of node. This will not fix the problem, but instead
+	 * it makes it so we can fix it later*/
         if(node->parent->children[0] == node)
         {
 		if (node->parent->children[1]->red == 1)
@@ -725,6 +728,8 @@ void delete_rearrangement(node * node)
 		}
         
         }
+
+	/*As mentioned above, this is a mirror image of the previous case*/
 	if(node->parent->children[1] == node)
         {
 		if (node->parent->children[0]->red == 1)
@@ -736,7 +741,8 @@ void delete_rearrangement(node * node)
         
         }
 	
-	
+	/*The next two cases are mirror imgages of each other. If node's parent, sibling and siblings kids
+	 *are all black, we color it's sibling red and run a recursive call on N's parent*/
 	if(node->parent->children[0] == node)
         {
 			if ((node->parent->red == 0) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
@@ -745,7 +751,7 @@ void delete_rearrangement(node * node)
 				delete_rearrangement(node->parent);
 			}
 	}
-
+	/*Mirror image of the previous case*/
 	if(node->parent->children[1] == node)
         {
 			if ((node->parent->red == 0) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0))
@@ -754,7 +760,8 @@ void delete_rearrangement(node * node)
 				delete_rearrangement(node->parent);
 			}
 	}
-
+	/*The node's parent is red, and it's sibling, and sibling's children are black. We simply exchange the
+	 * color of the node's*/
 	if(node->parent->children[0] == node)
         {
 			if ((node->parent->red == 1) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
@@ -764,7 +771,7 @@ void delete_rearrangement(node * node)
 				
 			}
 	}
-
+	/*Mirror image*/
 	if(node->parent->children[1] == node)
         {
 			if ((node->parent->red == 1) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0))
@@ -773,7 +780,8 @@ void delete_rearrangement(node * node)
 				node->parent->children[LEFT_CHILD]->red = 1;
 			}
 	}
-
+	/*The node's sibling is black, and it's(the child's sibling's) left child is red and right is black
+	 *We switch the color of the sibling and and its left sibling and rotate_r*/
 	if(node->parent->children[0] == node)
         {
 			if ((node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 1) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
@@ -784,7 +792,7 @@ void delete_rearrangement(node * node)
 				delete_rearrangement(node);
 			}
 	}
-
+	/*Mirror Image*/
 	if(node->parent->children[1] == node)
         {
 			if ((node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 1))
@@ -795,14 +803,16 @@ void delete_rearrangement(node * node)
 				delete_rearrangement(node);
 			}
 	}
-	
+	/*The node's sibling is balck and that's sibling's right child is red. In this case the node
+	 *to be deleted is the left child of it's parent. We switch the color of our nodes parent
+	 * and our nodes sibling and rotate_l at our node's parent.*/
 	if((node->parent->children[0] == node) && (node->parent->children[1]->red == node->red))
         {
 		node->parent->red = 0;
 		node->parent->children[1]->red = 0;
 		rotate_l(node->parent);	
 	}
-
+	/*mirror image of above*/
 	if((node->parent->children[1] == node) && (node->parent->children[0]->red == node->red))
         {
 		node->parent->red = 0;
@@ -810,7 +820,8 @@ void delete_rearrangement(node * node)
 		rotate_r(node->parent);	
 	}
 }
-
+/*Change node takes a node and removes the connections from it's parent, replacing it with
+ *the new node*/
 void change_node(node * old, node * new)
 {
         if (old->parent == NULL)
