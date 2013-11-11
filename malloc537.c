@@ -44,6 +44,7 @@ void *malloc537(size_t size)
 	 */
 	
 	remove_node = contained_lookup(return_ptr, size);
+
 	while(remove_node != NULL)
 	{
 		delete_node(remove_node->base);	
@@ -55,9 +56,10 @@ void *malloc537(size_t size)
 	insert(return_ptr, size);
 
 	/*Debug! print the tree*/ 
-	/*print(root, 0);
-	printf("\n");*/
-	
+	/*
+	print(root, 0);
+	printf("\n");
+	*/
 	return return_ptr;
 }
 
@@ -106,6 +108,7 @@ void free537(void *ptr)
 
 	temp->free = 1;
 	free(ptr);
+	
 	/*
 	print(root, 0);
 	printf("\n");
@@ -158,6 +161,7 @@ void *realloc537(void *ptr, size_t size)
 	print(root, 0);
 	printf("\n");
 	*/
+	
 	return return_pointer;
 }
 

@@ -17,6 +17,39 @@
 node * root;
 
 
+void rotate_l(node * lnode)
+{
+        node * templ = NULL;
+
+	templ = lnode->children[1];
+        change_node(lnode, templ);
+        lnode->children[1] = templ->children[LEFT_CHILD];
+        if (templ->children[0] != NULL)
+        {
+                templ->children[0]->parent = lnode;
+        }
+        templ->children[LEFT_CHILD] = lnode;
+        lnode->parent = templ;
+
+}
+
+void rotate_r(node * rnode)
+{
+        node * temp = NULL;
+
+	temp = rnode->children[0];
+        change_node(rnode, temp);
+        rnode->children[0] = temp->children[RIGHT_CHILD];
+        if (temp->children[RIGHT_CHILD]!= NULL)
+        {
+                temp->children[1]->parent = rnode;
+        }
+        temp->children[1] = rnode;
+        rnode->parent = temp;
+
+}
+
+
 node * lookup(void * base)
 {
 	/*
@@ -155,35 +188,36 @@ node * contained_lookup_r(void * base, size_t bounds, node * parent)
 	if(parent == NULL)
 	return NULL;
 
-
 	/*
 	 * If the current node's base is too small, look at the right child.
 	 */
-
-	else if(parent->base <= base)
+	/*
+	else if(((long)(parent->base) + parent->bounds) < (long)base)
 	{
+		
 		if(parent->children[RIGHT_CHILD] != NULL)
 		return contained_lookup_r(base, bounds, parent->children[RIGHT_CHILD]);
 		else
 		return NULL;
 	}
-
+	*/
 	/*
 	 * If the current node's base is too big, look at the left child.
 	 */
-
-	else if(((long)parent->base + parent->bounds) >= ((long)base + bounds))
+	/*
+	else if(((long)(base) + bounds) < (long)parent->base)
 	{
 		if(parent->children[LEFT_CHILD] != NULL)
 		return contained_lookup_r(base, bounds, parent->children[LEFT_CHILD]);
 		else
 		return NULL;
 	}
+	*/
 	/*
 	 * If our node's base is in range, check the size and return if it's small enough and free.
 	 * Otherwise, check both children if the exist.
 	 */
-	else if(parent->base > base && ((long)parent->base + parent->bounds) < ((long)base + bounds) && parent->free)
+	if(parent->base > base && ((long)parent->base + parent->bounds) < ((long)base + bounds) && (parent->free == 1))
 	{
 		return parent;
 	}
@@ -394,6 +428,8 @@ int clean_tree(node * child)
 		{
 			return 1;
 		}
+		
+
 		/* if the grandparent has two children, and they're both red*/
 		if((child->parent->parent->children[0] != NULL) && (child->parent->parent->children[1] != NULL) && (child->parent->parent->children[0]->red == 1) && (child->parent->parent->children[1]->red == 1)){
 			
@@ -624,6 +660,7 @@ int delete_node (void * base)
         node * child = NULL;
         node * temp = NULL;
         temp = lookup(base);
+	printf("Deleting node at %p\n", (void *)temp);
         if (temp == NULL)
         {
                 printf("You cannot delete a node for a base that is not in the tree.");
@@ -664,13 +701,15 @@ int delete_node (void * base)
 
 	change_node(temp, child);
 	free(temp);
-
+	return 1;
 }
+
+
 
 void delete_rearrangement(node * node)
 {
         /*if the node has become the root, we are fine.*/
-	int stop = 0;
+
         if (node->parent == NULL)
         {
                 return;
@@ -678,21 +717,21 @@ void delete_rearrangement(node * node)
 
         if(node->parent->children[0] == node)
         {
-		if (node->parent->children[1]->red = 1)
+		if (node->parent->children[1]->red == 1)
 		{
 			node->parent->children[1]->red = 0;
 			node->parent->red = 1;
-			rotate_l(n->parent);
+			rotate_l(node->parent);
 		}
         
         }
 	if(node->parent->children[1] == node)
         {
-		if (node->parent->children[0]->red = 1)
+		if (node->parent->children[0]->red == 1)
 		{
 			node->parent->children[0]->red = 0;
 			node->parent->red = 1;
-			rotate_r(n->parent);
+			rotate_r(node->parent);
 		}
         
         }
@@ -700,25 +739,25 @@ void delete_rearrangement(node * node)
 	
 	if(node->parent->children[0] == node)
         {
-			if ((node->parent->red == 0) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			if ((node->parent->red == 0) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
 			{
 				node->parent->children[RIGHT_CHILD]->red = 1;
-				delete_rearrangment(node->parent);
+				delete_rearrangement(node->parent);
 			}
 	}
 
 	if(node->parent->children[1] == node)
         {
-			if ((node->parent->red == 0) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			if ((node->parent->red == 0) && (node->parent->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[LEFT_CHILD]->children[RIGHT_CHILD]->red == 0))
 			{
 				node->parent->children[LEFT_CHILD]->red = 1;
-				delete_rearrangment(node->parent);
+				delete_rearrangement(node->parent);
 			}
 	}
 
 	if(node->parent->children[0] == node)
         {
-			if ((node->parent->red == 1) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			if ((node->parent->red == 1) && (node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
 			{
 				node->parent->red = 0;				
 				node->parent->children[RIGHT_CHILD]->red = 1;
@@ -737,7 +776,7 @@ void delete_rearrangement(node * node)
 
 	if(node->parent->children[0] == node)
         {
-			if ((node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 1) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0)
+			if ((node->parent->children[RIGHT_CHILD]->red == 0) && (node->parent->children[RIGHT_CHILD]->children[LEFT_CHILD]->red == 1) && (node->parent->children[RIGHT_CHILD]->children[RIGHT_CHILD]->red == 0))
 			{
 				node->parent->children[1]->red = 1;
 				node->parent->children[1]->children[LEFT_CHILD]->red = 0;
@@ -761,46 +800,15 @@ void delete_rearrangement(node * node)
         {
 		node->parent->red = 0;
 		node->parent->children[1]->red = 0;
-		rotate_l(n->parent);	
+		rotate_l(node->parent);	
 	}
 
 	if((node->parent->children[1] == node) && (node->parent->children[0]->red == node->red))
         {
 		node->parent->red = 0;
 		node->parent->children[0]->red = 0;
-		rotate_r(n->parent);	
+		rotate_r(node->parent);	
 	}
-}
-void rotate_l(node * node)
-{
-        node * templ;
-
-	templ = node->children[1];
-        change_node(node, templ);
-        node->children[1] = templ->left;
-        if (templ->children[0] != NULL)
-        {
-                templ->children[0]->parent = node;
-        }
-        templ->left = node;
-        node->parent = templ;
-
-}
-
-void rotate_r(node * node)
-{
-        node * temp;
-
-	temp = node->children[0];
-        change_node(node, temp);
-        node->children[0] = temp->right;
-        if (temp->right!= NULL)
-        {
-                temp->children[1]->parent = node;
-        }
-        temp->children[1] = node;
-        node->parent = temp;
-
 }
 
 void change_node(node * old, node * new)
@@ -824,7 +832,7 @@ void change_node(node * old, node * new)
         }
         if (new != NULL)
         {
-                new->parent = old-parent;
+                new->parent = old->parent;
         }
 }
 
@@ -852,7 +860,7 @@ void print(node * root, int depth)
 		printf(".");
 	}
 
-	printf("red = %d node at %p with base %p size %i, parent %p, and children %p %p\n",root->red, (void *)root,root->base, (int)root->bounds, (void *)root->parent, (void *)root->children[LEFT_CHILD], (void *)root->children[RIGHT_CHILD]);
+	printf("red = %d, free = %d node at %p with base %p size %i, parent %p, and children %p %p\n",root->red, root->free, (void *)root,root->base, (int)root->bounds, (void *)root->parent, (void *)root->children[LEFT_CHILD], (void *)root->children[RIGHT_CHILD]);
 
 	if(root->children[RIGHT_CHILD] != NULL)
 	print(root->children[RIGHT_CHILD], depth + 1);
