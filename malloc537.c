@@ -1,6 +1,5 @@
 /*
- *537malloc.c
- *Written by Nik Ingrassia (ingrassi) and Blake Martin (blakem)
+ *537malloc.c *Written by Nik Ingrassia (ingrassi) and Blake Martin (blakem)
  *
  *Adds memory checking bits and pieces to standard malloc/realloc/free,
  *and defines a new function 537memcheck to make sure a pointer
