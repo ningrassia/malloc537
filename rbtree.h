@@ -121,6 +121,13 @@ void change_node(node * old, node * new);
 node * create(void * base, size_t bounds);
 
 /*
- * Print the current tree.
+ * Print the current tree - Recursive!
  */
 void print(node * root, int depth);
+
+/*
+ * Print the whole tree from outside of rbtree.c!
+ * Use me if you want to print the tree in the program.
+ * In-order with depth as .!
+ */
+void print_func();

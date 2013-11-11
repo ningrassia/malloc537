@@ -218,7 +218,7 @@ node * contained_lookup_r(void * base, size_t bounds, node * parent)
 	 * If our node's base is in range, check the size and return if it's small enough and free.
 	 * Otherwise, check both children if the exist.
 	 */
-	if(parent->base > base && ((long)parent->base + parent->bounds) < ((long)base + bounds) && (parent->free == 1))
+	else if(parent->base > base && ((long)parent->base + parent->bounds) < ((long)base + bounds) && (parent->free == 1))
 	{
 		return parent;
 	}
@@ -875,4 +875,9 @@ void print(node * root, int depth)
 
 	if(root->children[RIGHT_CHILD] != NULL)
 	print(root->children[RIGHT_CHILD], depth + 1);
+}
+
+void print_func()
+{
+	print(root, 0);
 }
