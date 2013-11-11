@@ -865,3 +865,8 @@ void print(node * root, int depth)
 	if(root->children[RIGHT_CHILD] != NULL)
 	print(root->children[RIGHT_CHILD], depth + 1);
 }
+
+void print_func()
+{
+	print(root, 0);
+}
